@@ -1,0 +1,48 @@
+-	script	Sample	-1,{
+OnInit:
+// Map Lists
+setarray .Map$[0],"guild_vs1","guild_vs2","guild_vs3","guild_vs4","guild_vs5";
+// Cash Reward ( Normal | Boss )
+setarray .Cash[0],1,25;
+// Normal Mob ID + Count
+setarray .MobCount[0],1002,10;
+// BOSS Mob ID + Count
+setarray .BossCount[0],1002,1;
+// Invasion Duration ( Minutes )
+set .Duration,1;
+end;
+
+OnWhisperGlobal:
+OnMinute00:
+awake strnpcinfo(0);
+set .RandomMap$,.Map$[ rand( getarraysize(.Map$) ) ];
+killmonster .RandomMap$,"All";
+announce "INVASION has started at "+.RandomMap$+" .",0;
+for( set .@i,0; .@i < getarraysize( .MobCount ) - 1; set .@i,.@i + 1 )
+	monster .RandomMap$,0,0,"INVASION NAME",.MobCount[.@i],.MobCount[.@i+1],strnpcinfo(0)+"::OnKilled";
+sleep ( .Duration * 10000 );
+killmonster .RandomMap$,"All";
+announce "INVASION has ended.",0;
+end;
+
+OnKilled:
+set #CASHPOINTS,#CASHPOINTS + .Cash[0];
+dispbottom "Cash Points : "+#CASHPOINTS;
+if( !mobcount( .RandomMap$,strnpcinfo(0)+"::OnKilled" ) ){
+	announce "ALERT : Final Boss Arrived.",0;
+	for( set .@i,0; .@i < getarraysize( .BossCount ) - 1; set .@i,.@i + 1 )
+		monster .RandomMap$,0,0,"INVASION BOSS",.BossCount[.@i],.BossCount[.@i+1],strnpcinfo(0)+"::OnBossKilled";
+}else
+	announce "Monster Remain : "+mobcount( .RandomMap$,strnpcinfo(0)+"::OnKilled" ),0;
+end;
+
+OnBossKilled:
+set #CASHPOINTS,#CASHPOINTS + .Cash[1];
+dispbottom "Cash Points : "+#CASHPOINTS;
+announce strcharinfo(0)+" killed Invasion Boss",0;
+if( !mobcount( .RandomMap$,strnpcinfo(0)+"::OnBossKilled" ) ){
+	announce "INVASION has ended.",0;
+	awake strnpcinfo(0);
+}
+end;
+}

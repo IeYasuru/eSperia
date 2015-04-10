@@ -1,0 +1,23 @@
+All you have to do is extract it on your server.
+It contains costume.txt sample script.
+
+to use this plugins you must add it in plugin.conf
+
+go to conf/plugins.conf
+
+at the bottom search for 
+
+plugins_list: [
+	/* Enable HPMHooking when plugins in use rely on Hooking */
+	"HPMHooking",
+	"costumeitem",
+	//"db2sql",
+	//"sample",
+	//"other",
+]
+
+uncomment HPMHooking
+and add costumeitem.
+
+NOTE: Please Support by Voting or +rep.
+Thank you for using.

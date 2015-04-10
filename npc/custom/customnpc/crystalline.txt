@@ -1,0 +1,133 @@
+//eAthena Tales of Ragnarok custom script episode==================
+//Maps in use, Prontera,crystal field and Crypt====================
+//Those maps can be found on RUNE.=================================
+//Prontera is a default map...=====================================
+//This script is only for using, no editting allowed, and if you do
+//Please contact me @ thecreator0707@hotmail.com===================
+//Story behind this episode:=======================================
+//A group of mechanics, engineering reactors to harness the powers=
+//Of the world, it is your duty to take it down, but something====
+//You may ONLY edit the following: NPC names, sprites ID, items.==
+//And mobs.
+//Mobs range from Giearth to Knocker, to alligator.
+//Hope you enjoy!
+prontera,198,294,5	script	Distraught Man	963,{
+
+	mes "[Distraught Man]";
+	mes "Hello there young one.";
+	mes "I have something to ask of you...";
+	mes "There is a plague coming around....";
+	mes "And it's not us, it's our planet.";
+	mes "I need your help young Hero.";
+	mes "So will you help rid the plague and retrieve a ^CD0000Eye of Hellion^000000?";
+	next;
+	switch(select("Yes:No:I have the item") ){
+	
+//	menu "Yes",Accept,"No",Decline,"I have the item.",GotItem;
+case 1:
+	mes "[Distraught Man]";
+	mes "I bid you fare well...Young one.";
+	warp "crystfield", 79, 4;
+	close;
+case 2:
+	mes "[Distraught Man]";
+	mes "I see...";
+	mes "Another hero will rise.";
+	mes "Just remember, the fate of us is drenched in your soul now.";
+	close;
+case 3:
+	if(countitem(7337)) > 0	callsub	toget;
+	if(countitem(7337)) < 1	callsub	noget;
+toget:
+	mes "[Distraught Man]";
+	mes "Ahh great, you actually made it through the journey.";
+	mes "I knew the godly Athena would protect you.";
+	mes "Here is your item ^00CD00Fusion Wings^000000";
+	next;
+	getitem 18246, 1;
+	delitem 7337, 1;
+	close;
+noget:
+	mes "[Distraught Man]";
+	mes "It seems you do not have a ^CD0000Eye of Hellion.^000000";
+	mes "Please come back later.";
+	close;
+
+}
+}
+//Monster Spawns
+crystfield,0,0,0,0	monster	Knocker	1838,40,0,0,0
+crystfield,0,0,0,0	monster	Giearth	1121,30,0,0,0
+crystfield,0,0,0,0	monster	Green_Plant	1080,20,0,0,0
+crystfield,0,0,0,0	monster	Alligator	1271,15,0,0,0
+crystfield,0,0,0,0	monster	Alice	1521,5,0,0,0
+crystfield,0,0,0,0	monster	ENTHWEIHEN	1957,1,0,0,0
+//Monster Spawns @ Crypt Map, You can change the map if you want....
+crypt,0,0,0,0	monster	Quve	1508,40,0,0,0
+crypt,0,0,0,0	monster	Raggler	1254,20,0,0,0
+crypt,0,0,0,0	monster	Rawrel	1663,5,0,0,0
+crypt,0,0,0,0	monster	Raydric	1467,5,0,0,0
+crypt,0,0,0,0	monster	Removal	1682,2,0,0,0
+crypt,0,0,0,0	monster	Rybio	1201,10,0,0,0
+//Warping
+crystfield,73,117,0	warp	crypt,73,34	1,1,crypt,73,40
+crypt,73,36,0	warp	crystfield,72,115	1,1,crystfield,72,115
+//The crazy professory within the Crypt.
+crypt,126,107,5	script	Evil Professor	980,{
+
+	mes "[Evil Professor]";
+	mes "Heheheh......";
+	mes "....Do you...";
+	mes "..Do you actually think you can stop me?!?!?";
+	mes "This world will bow down to me, as I suck it's life away...";
+	mes "You will be taken away with it....I will harness this power.";
+	mes "There's nothing you can do!";
+	mes "I feel your heat pumping.";
+	mes "If you give up now, I will finish you off fast.";
+	next;
+	switch(select("Yes:No:Your time is done" ) )
+	{
+	case 1:
+//	menu "Yes",NoCanDO,"No",I_NO,"You're time is done.",success;
+	atcommand "@spawn 1377";
+	close;
+	end;
+	case 2:
+	mes "[Evil Professor]";
+	mes "Yes...Now die!";
+	atcommand "@die";
+	close;
+case 3:
+	mes "[Evil Professor]";
+	mes "How...How is that even possible?...";
+	mes "The world as we know it is crippling apart.";
+	mes "Even if I die here, the world will fall into the abyss..";
+	mes "You can't stop it.";
+	mes "^FF0000 You have obtained a^000000";
+	mes "^CD0000Eye of Hellion^000000";
+	next;
+	if(countitem(7027)) > 0	callsub	del;
+	if(countitem(7027)) < 1	callsub	del2;
+del:
+	getitem 7337, 1;
+	delitem 7027, 1;
+	close;
+del2:
+	close;
+	}
+}
+crypt,134,112,5	script	Evil Assistant	993,{
+	mes ".....";
+	mes "Best thing to do is get out of here...";
+	close;
+
+	}
+crystfield,69,97,5	script	Injured Man	956,{
+
+	mes ".....Uuhhhhhh..";
+	mes "You....you...must...";
+	mes "You must not go in there...";
+	mes "You will perish if you do..";
+	mes ".........";
+	close;
+	}

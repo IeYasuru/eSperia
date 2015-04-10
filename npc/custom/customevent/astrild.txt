@@ -1,0 +1,184 @@
+// Map Astrild
+// Map goes to YukiTsuki, I take no credit, just a rename... Cuz' the name eathena is kinda retarded.
+// Script by: Zaranth
+// About
+// Basic NPC's all around Astrild, some shops
+// Flight system [In progress]
+// Treasure hunt script [Complete but may need some work]
+// Halloween event (Collect the amount of items, display who got the most of that item)
+//==================
+//Treasure Hunt script
+//==================
+-	script	Treasure Hunt	-1,{
+// Whisper the NPC like this "NPC:Treasure Hunt <anycharacter> and the menu will pop up!
+OnWhisperGlobal:
+set @npc$, "Treasure Hunt";
+set .map$, "astrild";
+set @gmlvl, 60;
+set .treasureid, 1324;
+set .rounds, 10;
+if(getgmlevel() < @gmlvl)
+{
+	mes "["+ @npc$ +"]";
+	mes "You must be a GM to activate the treasure hunt!";
+close;
+}
+	mes "["+ @npc$ +"]";
+	mes "You are confirmed as a GM. Welcome to the Treasure hunt control panel!";
+	mes "So...";
+	mes "Would you like to start the treasure hunt?";
+next;
+if (select("Yes:No") == 2) close;
+	mes "["+ @npc$ +"]";
+	mes "Okay then.";
+	mes "Wait a few seconds...";
+	mapannounce .map$, "On the map Astrild",bc_all,0xFFF000;
+	next;
+	mes "["+ @npc$ +"]";
+	mes "It begins.";
+	mapannounce .map$, "The treasure hunt has begun!",bc_all,0xFFF000;
+	mes "Wait...";
+	mapannounce .map$, "Try to get all the treasure chests you can! Then round 2 starts!",bc_all,0xFFF000;
+donpcevent "Treasure Hunt::OnTBspawn";
+close2;
+OnTBspawn:
+OnClock1800:
+set .rounds, 0;
+while (.rounds < .maxrounds+1) {
+mapannounce .map$, "Round "+ .rounds +" has begun, find the treasure quick!",bc_all,0xFF0000;
+monster .map$,0, 0,"Treasure Box",1324,50,"Treasure Hunt::OnBox";
+set .rounds, .rounds+1;
+sleep 600000;
+}
+killmonsterall .map$;
+end;
+}
+// End of Treasure hunt scrip
+//=========================================
+// THE WARPS EVERYWHERE FOR ASTRILD
+//==================================================================================
+//Warp works like this <Warper to <unknown what middle does> to other part of map
+//warp to <unknown yet> to map
+astrild,256,293,0	warp	astrild,223,223	1,1,astrild,256,286
+astrild,256,288,0	warp	astrild,222,222	1,1,astrild,256,298
+astrild,151,112,0	warp	astrild,32565,2332	1,1,astrild,144,112
+astrild,146,112,0	warp	astrild,232,234	1,1,astrild,155,112
+astrild,204,113,0	warp	astrild,2323,23	1,1,astrild_in,159,27//middle
+astrild,210,105,0	warp	astrild,232,232	1,1,astrild_in,200,11//right
+astrild,199,116,0	warp	astrild,654,245	1,1,astrild_in,120,11//left
+astrild_in,160,21,0	warp	astrild_in,423,232	1,1,astrild,202,111//Middle
+astrild_in,119,5,0	warp	astrild_in,232,232	1,1,astrild,197,114//Left
+astrild_in,200,5,0	warp	astrild_in,232,232	1,1,astrild,208,103//Right
+//===================================================================================
+//============
+// Basic shops
+//===========
+// Ice Cream shop
+//===========
+//====
+// The shops go in here, with there items.
+-	shop	icecream_shop	-1,536:300
+-	shop	fish_shop	-1,2764:400,584:400,14524:500
+//============
+astrild,352,171,7	script	Ice Cream Shop	423,{
+set @i, 0;
+	mes "[Ice Cream Shop]";
+	mes "Welcome to the Ice cream shop!";
+	mes "Before you leave or go on the ship, please buy some ice cream!";
+	next;
+	callshop "icecream_shop",1;
+	end;
+}
+// Warp points that leads inside the 
+//===========
+// The Sea Man
+//===========
+astrild,369,188,4	script	Sailor	100,{
+
+	mes "[Sailor]";
+	mes "Ahhh, sure is a great day.";
+	mes "Nice weather too, the sea is just beautiful.";
+	mes "Dont'cha think aye?";
+	next;
+	switch(select("Yeah:Nope")) {
+	case 1:
+	mes "[Sailor]";
+	mes " Yes yes, indeed my friend.";
+	mes "Have a good day, and watch out for them pirates if you go across the sea";
+	mes "There a mighty bunch to deal with aye.";
+	mes "Speaking of which, you might want to protect yourself aye.";
+	mes "I got just the right stuff for you sir, but it doesn't come free.";
+	mes "Here's what I got sir.";
+	next;
+	mes "[Sailor]";
+	mes "I got a Small fishing Rod to reduce your cast rate.";
+	mes "Some tasty Skewer Soup!";
+	mes "And some Superb Fish Slice!, Recovers your HP and SP sir.";
+	mes "I hope this helps you in your travels.";
+	callshop "fish_shop",1;
+	end;
+	case 2:
+	mes "[Sailor]";
+	mes "Where are you from?";
+	mes "Wherever you're from you must have some perfect weather... Hahah.";
+	close;
+}
+}
+//=========================
+// NPC Guards Stationed all over Astrild.
+astrild_in,124,10,9	script	Astrild Guard	414,{
+	mes "[Astrild Guard]";
+	mes "Hello there "+strcharinfo(0)+"";
+	mes "Welcome to Astrild!";
+	mes "But please remember to watch yourself";
+	mes "No thievery... Not in Astrild.";
+	mes "Have a good day.";
+	close;
+}
+//==========================
+// Duplicate Guards
+//=================================================================
+astrild_in,115,10,8	duplicate(Astrild Guard)	Astrild Guard	414
+astrild_in,167,24,9	duplicate(Astrild Guard)	Astrild Guard	414
+astrild_in,153,24,8	duplicate(Astrild Guard)	Astrild Guard	414
+astrild_in,204,9,8	duplicate(Astrild Guard)	Astrild Guard	414
+astrild_in,195,9,9	duplicate(Astrild Guard)	Astrild Guard	414
+//=================================================================
+// NPC's in Astrild's in aka astrild_in
+astrild_in,155,46,4	script	Randy	459,{
+
+	mes "[Randy]";
+	mes "Hello there young one.";
+	mes "Enjoy your visit at Astrild.";
+	mes "Wanna know a secret?";
+	next;
+	switch(select("Sure, I like secrets:Nope, I can't keep a secret.")) {
+case 1:
+	mes "[Randy]";
+	mes "Oh great! Well listen in closely..";
+	mes "Closer....";
+	next;
+	mes "Okay, I hear that sometimes randomly in the Astrild outskirts treasure chests pop up...";
+	mes "And not ordinary chests, pirate chests.";
+	mes "That's right, long dead pirates chests for the pickens.";
+	mes "So, watch out, there will be signs when the chests appear...";
+	mes "Or so the myth says.";
+	mes "See you later!";
+	close;
+case 2:
+	mes "[Randy]";
+	mes "I see... I guess you don't want to know about treasure and it's whereabouts....";
+	close;
+}
+}
+//===== Sea ship guy
+astrild,383,152,5	script	Lex	55,{
+
+	mes "[Lex]";
+	mes "Mmm.....";
+	mes "Don'tcha just like the sea?";
+	mes "It's so relaxing...";
+	mes "Sometimes I wish I could be the sea, to relax others.";
+	mes "Well see you later and welcome to Astrild.";
+	close;
+}

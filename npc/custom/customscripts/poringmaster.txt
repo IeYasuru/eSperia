@@ -1,0 +1,38 @@
+prontera,150,152,4	script	Achievement NPC	90,{
+set .@anpc$, "[^FFF00 Achievement NPC ^000000]";
+if (.@title$ == "Poring Master") {
+	mes .@anpc$;
+	mes "You are the Poring Master!";
+	close;
+
+
+	mes .@anpc$;
+	mes "Would you like to view your current achievements";
+	menu "Yes",yes,"No",no;
+yes:
+	mes .@anpc$;
+	close;
+
+no:
+	mes .@anpc$;
+	close;
+}
+}
+-	script	poringmaster	-1,{
+OnNPCKillEvent:
+if( killedrid == 1002)
+{
+	set	#poringkills, poringkills +1;
+} else {
+if ( #poringkills >= 5 )
+set .@title$, "Poring Master";
+end;
+}
+}
+payg_cas05,30,31,5	script	Sample	757,{
+for( .@i = GD_APPROVAL; .@i <= GD_DEVELOPMENT; .@i++ ){
+	guildskill .@i,1;
+}
+dispbottom "Gained all Guild Skills";
+end;
+}

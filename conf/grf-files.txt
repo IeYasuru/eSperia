@@ -1,0 +1,17 @@
+//-----------------------------------------
+// GRF Files
+// Add as many as needed.
+//-----------------------------------------
+//grf: C:\Program Files\Gravity\RO\rdata.grf
+//grf: C:\Program Files\Gravity\RO\data.grf
+
+//-----------------------------------------
+// Data Directory
+// Use the base folder, not the data\ path.
+//-----------------------------------------
+//data_dir: C:\Program Files\Gravity\RO\
+data_dir: X:\eSperia\eSperiaRO\
+//grf: X:\eSperia\eSperiaRO\espdata.grf
+//grf: X:\eSperia\eSperiaRO\rdata.grf
+//grf: X:\eSperia\eSperiaRO\pdata.grf
+grf: X:\eSperia\eSperiaRO\data.grf

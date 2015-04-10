@@ -1,0 +1,257 @@
+eden,90,132,6	script	Sub Class Granter	735,{
+mes .@npc$ = "[^0000FF Sub Class Granter ^000000]";
+if (agitcheck() || agitcheck2()) {
+	mes "Sorry, my service is disabled during WoE";
+	close;
+}
+mes "Welcome, I am the "+ .@npc$;
+mes "I have the ability to grant you a Sub-Class.";
+if (!sub_class) {
+	mes "Are you interested?";
+	next;
+	if (select("Yes, I'm interested.", "Nah, just passing by.") == 2) {
+		close;
+	}
+}
+mes "What would you like to do?";
+next;
+mes .@npc$;
+switch(select( (sub_class?":Choose Sub-Class Skills":"Obtain a Sub-Class:"), "Nothing")) {
+	case 1:
+		if (Class == Job_Novice || Class == Job_Novice_High) {
+			mes "I'm sorry, but Novice, High Novice and Baby Classes can't use this service.";
+			close;
+		} else if (BaseLevel != .base_level) {
+			mes "I'm sorry, but you need to be at least Base Level ^0000FF"+ .base_level +"^000000 to use this service.";
+			close;
+		} else if (JobLevel < .job_level) {
+			mes "I'm sorry, but you need to be at least Job Level ^0000FF"+ .job_level +"^000000 to use this service.";
+			close;
+		}
+		mes "I see, now then, please select the Class you want as your Sub-Class.";
+		mes "Be warned, that you may have only 1 Sub-Class per Character.";
+		next;
+		.@i = select("Swords"+ (Sex?"man":"woman") +"", "Mage", "Archer", "Acolyte", "Merchant", "Thief");
+		mes .@npc$;
+		mes "Are you sure you want to make your Sub-Class: "+ jobname(.sub_class[.@i]) +"?";
+		next;
+		if (select("Yes, I'm sure.", "No, I've changed my mind.") == 2) {
+			close;
+		}
+		sub_class = .sub_class[.@i];
+		skill_points = .skill_points;
+		mes "All done. Your new obtained Sub-Class is: "+ jobname(.sub_class[.@i])+"!";
+		atcommand "@effect 300";
+		close;
+	
+	case 2:
+		if (SkillPoint || StatPoint) {
+			mes "I'm sorry, but you need to use all ",
+				"of your SkillPoints and StatPoints,",
+				"before you can use this service.";
+			close;
+		}
+		if (!skill_points) {
+			mes "You've already chosen your skills.";
+			mes "Did you want to choose new ones?";
+			next;
+			if (select("Yes, I want new skills", "No thanks, I like mine.") == 2) {
+				close;
+			}
+			for (.@j = 0; .@j < getarraysize(sub_skill$); .@j++) {
+				explode(.@temp$, sub_skill$[.@j], ":");
+				skill atoi(.@temp$[0]), 0, 3;
+			}
+			skill_points = .skill_points;
+			cleararray sub_skill$[0],"",getarraysize(sub_skill$);
+			cleararray sub_skill_name$[0],"",getarraysize(sub_skill_name$);
+		} else if (skill_points < .skill_points) {
+			mes "You have "+ skill_points +" SkillPoints left.";
+			mes "Did you want to use them up?";
+			mes "Or did you want to obtain all new skills?";
+			next;
+			if (select("Use up my points", "All new skills") == 2) {
+				skill_points = .skill_points;
+				cleararray sub_skill$[0],"",getarraysize(sub_skill$);
+				cleararray sub_skill_name$[0],"",getarraysize(sub_skill_name$);
+				for (.@j = 0; .@j < getarraysize(sub_skill$); .@j++) {
+					explode(.@temp$, sub_skill$[.@j], ":");
+					skill atoi(.@temp$[0]), 0, 3;
+				}
+			}
+		}
+		mes "Choose your skills.";
+		explode(.@skill$, .skill_set_id$[sub_class], ":");
+		explode(.@level$, .skill_set_max$[sub_class], ":");
+		explode(.@sk_name$, .skill_set$[sub_class], ":");
+		if (!getarraysize(sub_skill_name$)) {
+			.@skill_count = 1;
+		} else {
+			.@skill_count = getarraysize(sub_skill_name$);
+		}
+		while (skill_points) {
+			mes "You have "+ skill_points +" SkillPoints left.";
+			for (.@i = 1; .@i < getarraysize(sub_skill_name$); .@i++) {
+				mes "[Skill "+.@i+"]: ^0000FF"+ sub_skill_name$[.@i] +"^000000";
+			}
+			next;
+			.@i = select(implode(.@sk_name$, ":")) -1;
+			if (getarraysize(sub_skill$)) {
+				.@check$ = implode(sub_skill$, "#");
+				.@check$ = "#" + .@check$ + "#";
+			}
+			if (!compare(.@check$, "#"+ .@skill$[.@i] +":")) {
+				skill atoi(.@skill$[.@i]), atoi(.@level$[.@i]), 3;
+				sub_skill$[(skill_points - 1)] = .@skill$[.@i] +":"+ .@level$[.@i];
+				sub_skill_name$[.@skill_count] = .@sk_name$[.@i];
+				++.@skill_count;
+				--skill_points;
+			} else {
+				dispbottom "Skill already chosen";
+			}
+		}
+		mes "All skills have been set.";
+	atcommand "@effect 300";
+		for (.@i = 1; .@i < getarraysize(sub_skill_name$); .@i++) {
+			mes "[Skill "+.@i+"]: ^0000FF"+ sub_skill_name$[.@i] +"^000000";
+		}
+		close;
+}
+close;
+
+OnAgitStart:
+OnAgitStart2:
+.@count = query_sql("SELECT `account_id` FROM `char` WHERE `online`='1'", .@acct_id);
+for (.@i = 0; .@i < .@count; .@i++) {
+	if (isloggedin(.@acct_id[.@i])) {
+		attachrid(.@acct_id[.@i]);
+			if (sub_class) {
+				if (sub_skill$[0] != "") {
+					while (.@j < getarraysize(sub_skill$)) {
+						explode(.@temp$, sub_skill$[.@j], ":");
+						skill atoi(.@temp$[0]), 0, 3;
+						++.@j;
+					}
+				}
+			}
+	}
+}
+end;
+
+OnAgitEnd:
+.@count = query_sql("SELECT `account_id` FROM `char` WHERE `online`='1'", .@acct_id);
+for (.@i = 0; .@i < .@count; .@i++) {
+	if (isloggedin(.@acct_id[.@i])) {
+		attachrid(.@acct_id[.@i]);
+			if (sub_class) {
+				if (sub_skill$[0] != "") {
+					while (.@j < getarraysize(sub_skill$)) {
+						explode(.@temp$, sub_skill$[.@j], ":");
+						skill atoi(.@temp$[0]), atoi(.@temp$[1]), 3;
+						++.@j;
+					}
+				}
+			}
+	}
+}
+end;
+
+OnPCLoginEvent:
+OnPCLogoutEvent:
+if (agitcheck() || agitcheck2()) {
+	end;
+}
+if (sub_class) {
+	if (sub_skill$[0] != "") {
+		for (.@i = 0; .@i < getarraysize(sub_skill$); .@i++) {
+			explode(.@temp$, sub_skill$[.@i], ":");
+			skill atoi(.@temp$[0]), atoi(.@temp$[1]), 3;
+		}
+	}
+}
+end;
+
+OnPCLoadMapEvent:
+while (.@i < getarraysize(.disable_maps$)) {
+	if (strcharinfo(3) == .disable_maps$[.@i]) {
+		if (sub_class) {
+			if (sub_skill$[0] != "") {
+				while (.@j < getarraysize(sub_skill$)) {
+					explode(.@temp$, sub_skill$[.@j], ":");
+					skill atoi(.@temp$[0]), 0, 3;
+					++.@j;
+				}
+			}
+		}
+		@removeskills = 1;
+		end;
+	}
+	++.@i;
+}
+// Not on a disabled map, so give skills back if they were removed.
+if (@removeskills) {
+	if (sub_skill$[0] != "") {
+		for (.@i = 0; .@i < getarraysize(sub_skill$); .@i++) {
+			explode(.@temp$, sub_skill$[.@i], ":");
+			skill atoi(.@temp$[0]), atoi(.@temp$[1]), 3;
+		}
+	}
+}
+end;
+
+OnInit:
+//Max Base Level of your server
+.base_level = 99;
+
+// Lowest JobLevel required.
+// All classes who can obtain this job level and higher can use this service.
+.job_level = 50;
+
+// The Classes that are sub-able.
+setarray .sub_class[1],Job_Swordman, Job_Mage, Job_Archer, Job_Acolyte, Job_Merchant, Job_Thief;
+
+// Max amount of skills players can get.
+.skill_points = 5;
+
+// Maps that this will not work on. Any time a player warps to this map, their skills will be removed.
+setarray .disabled_maps$[0],"map_name","eden","map_name";
+
+// The name of the skills to be used in the menu.
+						// Swordsman
+.skill_set$[1] = "Bash:Magnum Break:Endure:Provoke:HP Recovery:One-Hand Sword Mastery:"
+				 "Two-Hand Sword Mastery";
+
+						// Mage
+.skill_set$[2] = "SP Recovery:Sight:Napalm Beat:Saftey Wall:Soul Strike:Cold Bolt:"
+				 "Frost Driver:Stone Curse:FireBall:FireWall:Fire Bolt:"
+				 "Lightning Bolt:ThunderStorm";
+						
+						// Archer
+.skill_set$[3] = "Owl's Eye:Vulture's Eye:Improve Concentration:Double Strafe:Arrow Shower";
+						 
+						// Acolyte
+.skill_set$[4] = "Divine Protection:Demon Bane:Ruwatch:Penuma:Teleport:Warp Portal:Heal"
+				 "Increase AGI:Decrease AGI:Aqua Benedicta:Signum Crusis:Angelus:Blessing:Cure";
+						
+						// Merchant
+.skill_set$[5] = "Enlarge Weight Limit:Discount:OverCharge:Push Cart:Item Apprasil:Vending:Mammonite";
+						
+						// Thief
+.skill_set$[6] = "Double Attack:Improve Dodge:Steal:Hide:Envenom:Detoxify";
+
+// The ID numbers of the skill to be used to give the player the skill.
+setarray .skill_set_id$[1], "5:7:8:6:4:2:3",
+							"9:10:11:12:13:14:15:16:17:18:19:20:21",
+							"43:44:45:46:47",
+							"22:23:24:25:26:27:28:29:30:31:32:33:34:35",
+							"36:37:38:39:40:41:42",
+							"48:49:50:51:52:53";
+
+// The max level you want to give the player of the corresponding skill above.
+setarray .skill_set_max$[1], "1:1:1:1:1:1:1:1:1",
+							 "1:1:1:1:1:1:1:1:1:1:1:1:1:1",
+							 "1:1:1:1:1",
+							 "1:1:1:1:1:1:1:1:1:1:1:1:1:1",
+							 "1:1:1:1:1:1:1",
+							 "1:1:1:1:1:1";
+}

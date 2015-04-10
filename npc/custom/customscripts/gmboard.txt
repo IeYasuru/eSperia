@@ -1,0 +1,70 @@
+prontera,155,171,5	script	Sample	757,{
+if( .BoardOff && getgmlevel() < .GMLevel ){
+	mes "Board Closed.";
+	close;
+}
+switch( select( ( !getarraysize( .Message$ ) )?"":"View Board",
+				( .BoardOff || getarraysize( .Message$ ) >= .Limit )?"":"^0055FFPost Message^000000",
+				( !getarraysize( .Message$ ) )?"":"^0055FFDelete Message^000000",
+				( getgmlevel() < .GMLevel )?"":( .BoardOff )?"^0000FFOpen Board^000000":"^FF0000Close Board^000000" )){
+	Case 1:
+		set .@Post,0;
+		do{
+			mes "^0055FFPost No : ^000000"+( .@Post + 1 );
+			mes "^0055FFAuthor : ^000000"+.Author$[.@Post];
+			mes "^0055FFMessage : ^000000";
+			mes .Message$[.@Post];
+			set .@Option,select( ( .@Post >= ( getarraysize( .Message$ )-1 ) )?"":" ~ Next",
+								 ( .@Post <= 0 )?"":" ~ Previous",
+								 ( getarraysize( .Message$ ) <= 1 )?"":" ~ Jump",
+								 "^FF0000Close^000000" );
+			next;
+			switch( .@Option ){
+				Case 1: set .@Post,.@Post + 1; break;
+				Case 2: set .@Post,.@Post - 1; break;
+				Case 3:
+					mes "Which Post ?";
+					mes "No 1 ~ "+getarraysize( .Message$ );
+					input .@No,1,getarraysize( .Message$ );
+					set .@Post,( .@No - 1 );
+					next;
+				default:
+					break;
+			}
+			if( .@Post < 0 || .@Post >= getarraysize( .Message$ ) ){
+				message strcharinfo(0),"Back to Post#1";
+				set .@Post,0;
+			}
+		}while( .@Option != 4 );
+		break;
+	Case 2:
+		mes "Enter your Messages :";
+		do{
+			input .@input$;
+			set .@Message$,.@Message$ +" "+.@Input$;
+		}while( select("Continue Message:^0000FFPOST^000000") == 1 );
+		mes "Done.";
+		mes "Message : ^0055FF"+.@Message$;
+		set .Message$[getarraysize( .Message$ )],.@Message$;
+		set .Author$[getarraysize( .Author$ )],strcharinfo(0);
+		break;
+	Case 3:
+		mes "Delete All Message ?";
+		if( select("Yes:No") == 1 ){
+			deletearray .Message$[0],getarraysize( .Message$ );
+			deletearray .Author$[0],getarraysize( .Author$ );
+			mes "Done.";
+		}
+		break;
+	Case 4:
+		set .BoardOff,( .BoardOff )?0:1;
+		mes "Board "+( ( .BoardOff )?"^FF0000Closed":"^0055FFOpened" )+"^000000";
+		break;
+}
+close;
+		
+OnInit:
+set .GMLevel,80;
+set .Limit,100;
+end;
+}

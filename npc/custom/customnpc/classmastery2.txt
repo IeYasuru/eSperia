@@ -1,0 +1,1089 @@
+/*
+Class Mastery System
+Developed by: Aeromesi
+*/
+function	script	ClaMas	{
+@eac = eaclass();
+setarray .@class_list$, "Assassin Cross:Lord Knight:High Wizard:Sniper:Mastersmith:High Priest:Paladin:Scholar:Minstrel:Gypsy:Biochemist:Stalker:Champion";
+/*
+*/
+
+	mes "[^FF0000Class Mastery Menu^000000]";
+		switch(select("Choose Class:Revert to Original Class")) {
+
+			case 1:
+			
+			switch(select(.@class_list$))
+			{
+			
+case 1:// Assassin Cross
+			if (sinxclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (sinxpurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Assassin Cross Class, please visit the Class Mastery Manager.";
+				
+			} else 
+			if (@eac == EAJ_ASSASSIN_CROSS) {
+			mes "Sorry, but you already are an Assassin Cross, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Assassin Cross?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {                            
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Assassin Cross";
+			resetskill; 
+			resetstatus;
+			callfunc "ORIG_RETURN_VALUE";
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 2:// Lord Knight
+			if (lkclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (lkpurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Lord Knight, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_LORD_KNIGHT) {
+			mes "Sorry, but you already are a Lord Knight, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Lord Knight?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Lord Knight";
+			resetskill; 
+			resetstatus;
+			callfunc "ORIG_RETURN_VALUE";
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 3://High Wizard
+			if (hwclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (hwpurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Lord Knight, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_HIGH_WIZARD) {
+			mes "Sorry, but you already are a High Wizard, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an High Wizard?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange High Wizard";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 4://Sniper
+			if (snipclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (snippurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Sniper, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_SNIPER) {
+			mes "Sorry, but you already are an Sniper, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Sniper?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Sniper";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 5://Mastersmith
+			if (msclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (mspurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Sniper, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_MASTERSMITH) {
+			mes "Sorry, but you already are an Mastersmith, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Mastersmith?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Mastersmith";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 6://High Priest
+			if (hpclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (hppurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the High Priest, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_HIGH_PRIEST) {
+			mes "Sorry, but you already are an High Priest, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an High Priest?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange High Priest";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 7://Paladin
+			if (palyclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (palypurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Paladin, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_PALADIN) {
+			mes "Sorry, but you already are an Paladin, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Paladin?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Paladin";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 8://Scholar
+			if (scholclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (scholpurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Scholar, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_SCHOLAR) {
+			mes "Sorry, but you already are an Scholar, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Scholar?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Scholar";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 9://Minstrel
+if (Sex != Male) {
+		mes "You must be a Male to change into Minstrel.";
+		close;
+} else
+			if (mnstclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (mnstpurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Minstrel, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_MINSTREL) {
+			mes "Sorry, but you already are an Minstrel, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Minstrel?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Minstrel";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 10://Gypsy
+			if (gypclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+if (Sex != Female) {
+		mes "You must be a female to change into Gypsy.";
+		close;
+} else
+			if (gyppurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Gypsy, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_GYPSY) {
+			mes "Sorry, but you already are an Gypsy, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Gypsy?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Gypsy";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 11://Biochemist
+			if (bioclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (biopurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Biochemist, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_BIOCHEMIST) {
+			mes "Sorry, but you already are an Biochemist, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Biochemist?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Biochemist";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 12://Stalker
+			if (stalkclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (stalkpurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Stalker, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_STALKER) {
+			mes "Sorry, but you already are an Stalker, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Stalker?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Stalker";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+case 13://Champion
+			if (champclass == 1) {
+				mes "This is your original class.";
+				close;
+} else
+			if (champpurchase == 0) {
+
+				mes "It seems you haven't had the Class Mastery Manual enchanted with the Champion, please visit the Class Mastery Manager.";
+				
+			} else
+			if (@eac == EAJ_CHAMPION) {
+			mes "Sorry, but you already are an Champion, please choose another Class to change into.";
+			close;
+} else {
+			mes "Would you like to change into an Champion?";
+			mes "Remember, all skills and stats will be reset.";
+			next;
+			switch(select("Yes please.:No thanks")) {
+
+			case 1:
+			mes "Enjoy using your new Class.";
+			atcommand "@jobchange Champion";
+			atcommand "@joblevel 70";
+			resetskill; 
+			resetstatus;
+			close;
+			case 2:
+			mes "Alright come again if you change your mind.";
+			close;
+}
+}
+}
+//Revert back Into original class function
+			case 2:
+			if (eaclass(EAJ_ASSASSIN_CROSS) && sinxclass == 2)
+			{
+				mes "You already reverted back to your original class.";
+				close;
+			} else
+			if (sinxclass == 1) {
+			mes "Would you like to revert back to an Assassin Cross?";
+			switch(select("Yes:No")) {
+			case 1:
+			atcommand "@jobchange Assassin Cross";
+			atcommand "@joblevel 70";
+			sinxclass = 2;
+			close;
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if (lkclass == 1) {
+			mes "Would you like to revert back to an Lord Knight?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Lord Knight";
+			atcommand "@joblevel 70";
+			lkclass = 2;
+			close;
+			end;
+
+			case 2:
+			mes "Well come again if you decide to change your mind!";
+			close;
+}
+}
+			if(hwclass == 1) {
+			mes "Would you like to revert back to an High Wizard?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange High Wizard";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(snipclass == 1) {
+			mes "Would you like to revert back to an Sniper?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Sniper";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(msclass == 1) {
+			mes "Would you like to revert back to an Mastersmith?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Mastersmith";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(hpclass == 1) { 
+			mes "Would you like to revert back to an High Priest?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange High Priest";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(palyclass == 1) { 
+			mes "Would you like to revert back to a Paladin?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Paladin";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(scholclass == 1) { 
+			mes "Would you like to revert back to a Scholar?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Scholar";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(mnstclass == 1) { 
+			mes "Would you like to revert back to an Minstrel?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Minstrel";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(gypclass == 1) { 
+			mes "Would you like to revert back to an Gypsy?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Gypsy";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(bioclass == 1) { 
+			mes "Would you like to revert back to an Biochemist?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Biochemist";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(stalkclass == 1) { 
+			mes "Would you like to revert back to an Stalker?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Stalker";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+			if(champclass == 1) { 
+			mes "Would you like to revert back to an Champion?";
+			switch(select("Yes:No")) {
+
+			case 1:
+			atcommand "@jobchange Champion";
+			close;
+			end;
+
+			case 2:
+			mes "Okay";
+			close;
+}
+}
+
+
+//
+}
+}
+/*   _____ _                 __  __           _                  
+  / ____| |               |  \/  |         | |                 
+ | |    | | __ _ ___ ___  | \  / | __ _ ___| |_ ___ _ __ _   _ 
+ | |    | |/ _` / __/ __| | |\/| |/ _` / __| __/ _ \ '__| | | |
+ | |____| | (_| \__ \__ \ | |  | | (_| \__ \ ||  __/ |  | |_| |
+  \_____|_|\__,_|___/___/_|_|  |_|\__,_|___/\__\___|_|   \__, |
+                   |  \/  |                               __/ |
+                   | \  / | __ _ _ __   __ _  __ _  ___ _|___/ 
+                   | |\/| |/ _` | '_ \ / _` |/ _` |/ _ \ '__|  
+                   | |  | | (_| | | | | (_| | (_| |  __/ |     
+                   |_|  |_|\__,_|_| |_|\__,_|\__, |\___|_|     
+                                              __/ |            
+                                             |___/   
+				Description: Handles everything related to buying any 2-2 class to be enchanted in the manual.
+							 More variables will be put into a later rev (Make it more customizable)
+*/
+eden,90,137,4	script	Class Mastery Manager	421,{
+OnInit:
+.b_lvl = 99;
+
+.j_lvl = 70;
+
+mes .@clsm$ = "[^FF0000Class Mastery Manager^000000]";
+		if (Class == Job_Novice || Class == Job_Novice_High) {
+			mes "I'm sorry, but Novice, High Novice and Baby Classes can't use this service.";
+			close;
+		} else if (BaseLevel != .b_lvl) {
+			mes "I'm sorry, but you need to be at least Base Level ^0000FF"+ .b_lvl +"^000000 to use this service.";
+			close;
+		} else if (JobLevel < .j_lvl) {
+			mes "I'm sorry, but you need to be at least Job Level ^0000FF"+ .j_lvl +"^000000 to use this service.";
+			close;
+		} else
+if (countitem(501) == 0)
+{
+	mes "Well hello there "+strcharinfo(0)+"!";
+	mes "I have special powers enchanted in this ^FFF000Class Mastery Manual^000000 that allows you to choose any Transcendent Class.";
+next;
+	mes .@clsm$;
+	mes "You may always revert to your original class, skills and stats will be reset though.";
+	next;
+	mes .@clsm$;
+	mes "Interested in buying a Class Mastery Manual for 500,000 Zeny?";
+next;
+	switch(select("Yes I am interested.:Not interested.")) {
+	
+		case 1:
+			if (Zeny >= 500000) {
+					mes .@clsm$;
+					mes "Here is your Class Mastery Manual, stop by to purchase a Class to use with your Class Mastery Manual!";
+					next;
+					mes .@clsm$;
+					callfunc "ORIG_CLASS";
+					Zeny -= 500000;
+					getitem(501,1);
+					close;
+					} else
+					mes .@clsm$;
+					mes "It seems you don't have 500,000 Zeny!";
+					mes "Come back when you do so you can purchase Classes!";
+					close;
+
+		case 2:
+				mes .@clsm$;
+				mes "Well if you change your mind, please come again to purchase a Class Mastery Manual.";
+				close;
+}
+}
+setarray.@class_list_purchase$, "Assassin Cross:Lord Knight:High Wizard:Sniper:Mastersmith:High Priest:Paladin:Scholar:Minstrel:Gypsy:Biochemist:Stalker:Champion";				
+mes "Hello there "+strcharinfo(0)+"!";
+mes "It seems you have purchased the ^FFD000Class Mastery Manual^000000";
+next;
+mes .@clsm$;
+mes "Which Class would you like to be enchanted in your manual?";
+mes "All classes can be bought for 100,000,000 Zeny.";
+next;
+switch(select(.@class_list_purchase$)) {
+
+case 1:
+		if (sinxclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (sinxpurchase == 1)
+			{
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes .@clsm$;
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Assassin Cross.";
+				Zeny -= 100000000;
+				sinxpurchase = 1;
+				close;
+			} else
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Assassin Cross.";
+				close;
+case 2:
+		if (lkclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (lkpurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Lord Knight.";
+				Zeny -= 100000000;
+				lkpurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Lord Knight.";
+			close;
+case 3:
+		if (hwclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (hwpurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the High Wizard.";
+				Zeny -= 100000000;
+				hwpurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the High Wizard.";
+			close;
+case 4:
+		if (snipclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (snippurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Sniper.";
+				Zeny -= 100000000;
+				snippurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Sniper.";
+			close;
+case 5:
+		if (msclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (mspurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Mastersmith.";
+				Zeny -= 100000000;
+				mspurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Mastersmith.";
+			close;
+case 6:
+		if (hpclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (hppurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the High Priest.";
+				Zeny -= 100000000;
+				hppurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the High Priest.";
+			close;
+case 7:
+		if (palyclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (palypurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Paladin.";
+				Zeny -= 100000000;
+				palypurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Paladin.";
+			close;
+case 8:
+		if (scholclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (scholpurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Scholar.";
+				Zeny -= 100000000;
+				scholpurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Scholar.";
+			close;
+case 9:
+		if (Sex) {
+		if (mnstclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (mnstpurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Minstrel.";
+				Zeny -= 100000000;
+				mnstpurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Minstrel.";
+			close;
+} else
+				mes .@clsm$;
+				mes "Sorry, but this class is only available for Males.";
+				close;
+case 10:
+		if (Sex) {
+		if (gypclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (gyppurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Gypsy.";
+				Zeny -= 100000000;
+				gyppurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Gypsy.";
+			close;
+} else
+				mes .@clsm$;
+				mes "Sorry, but this class is only available for Females.";
+				close;
+case 11:
+		if (bioclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (biopurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Biochemist.";
+				Zeny -= 100000000;
+				biopurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Biochemist.";
+			close;
+case 12:
+		if (stalkclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (stalkpurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Stalker.";
+				Zeny -= 100000000;
+				stalkpurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Stalker.";
+			close;
+case 13:
+		if (champclass == 1) {
+				mes .@clsm$;
+				mes "This is your original class.";
+				close;
+			} else
+			if (champpurchase == 1)
+			{
+				mes "I'm sorry, but it seems you already purchased this Class.";
+				close;
+			} else
+			if ( Zeny >= 100000000 ) {
+				mes "Proceed to use the Class Mastery Manual in your inventory to use the Champion.";
+				Zeny -= 100000000;
+				champpurchase = 1;
+				close;
+			} else
+				mes .@clsm$;
+				mes "I'm sorry, but it seems you don't have enough Zeny for the Champion.";
+			close;
+}
+}
+function	script	ORIG_RETURN_VALUE	{
+		if (sinxclass == 2) {
+			sinxclass = 1;
+			close;
+} else
+		if (lkclass == 2) {
+			lkclass = 1;
+} else
+		if (hwclass == 2) {
+			hwclass = 1;
+} else
+		if (snipclass == 2) {
+			snipclass = 1;
+} else
+		if (msclass == 2) {
+			msclass = 1;
+} else
+		if (hpclass == 2) {
+			hpclass = 1;
+} else
+		if (palyclass == 2) {
+			palyclass = 1;
+} else
+		if (scholclass == 2) {
+			scholclass = 1;
+} else
+		if (mnstclass == 2) {
+			mnstclass = 1;
+} else
+		if (gypclass == 2) {
+			gypclass = 1;
+} else
+		if (bioclass == 2) {
+			bioclass = 1;
+} else
+		if (stalkclass == 2) {
+			stalkclass = 1;
+} else
+		if (champclass == 2) {
+			champclass = 1;
+} else
+close;
+}
+function	script	ORIG_CLASS	{
+ORIG_CLASS:
+
+		@eaorig = eaclass();
+		//setarray .@orig_class$, sinxclass,lkclass,hwclass,snipclass,msclass,hpclass,palyclass,scholclass,mnstclass,gypclass,bioclass,stalkclass,champclass;
+		if (@eaorig == EAJ_ASSASSIN_CROSS) {
+			sinxclass = 1;
+			mes "I have recorded Assassin Cross as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_LORD_KNIGHT) {
+			lkclass = 1;
+			mes "I have Lord Knight as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_HIGH_WIZARD) {
+			hwclass = 1;
+			mes "I have recorded High Wizard as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_SNIPER) {
+			snipclass = 1;
+			mes "I have recorded Sniper as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_MASTERSMITH) {
+			msclass = 1;
+			mes "I have recorded Mastersmith as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_HIGH_PRIEST) {
+			hpclass = 1;
+			mes "I have recorded High Priest as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_PALADIN) {
+			palyclass = 1;
+			mes "I have Paladin as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_SCHOLAR) {
+			scholclass = 1;
+			mes "I have recorded Scholar as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_MINSTREL) {
+			mnstclass = 1;
+			mes "I have recorded Minstrel as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_GYPSY) {
+			gypclass = 1;
+			mes "I have recorded Gypsy as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_BIOCHEMIST) {
+			bioclass = 1;
+			mes "I have recorded Biochemist as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_STALKER) {
+			stalkclass = 1;
+			mes "I have recorded Stalker as being your default class you may Revert back to.";
+			close;
+		} else
+		if (@eaorig == EAJ_CHAMPION) {
+			champclass = 1;
+			mes "I have recorded Champion as being your default class you may Revert back to.";
+			close;
+		} else
+close;
+}

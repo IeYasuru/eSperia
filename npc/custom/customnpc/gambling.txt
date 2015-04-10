@@ -1,0 +1,98 @@
+/*prontera,155,182,5	script	Zeny Gambler	757,{
+mes .@zgam$ = "[^FF0000Zeny Gambler^000000]";
+.zAmount = 1000;
+.zWinningRate = 50;
+mes .@zgam$;
+mes "Do you want to try and gamble "+.zAmount+" Zeny to triple your profit?";
+mes "You have at least a ^FF000E"+.zWinningRate+"^000000% chance to win! So be cautious!";
+next;
+if( select("Yes:No") == 2 ) close;
+if(Zeny < .zAmount) {
+	mes .zgam$;
+	mes "You don't have "+.zAmount+" Zeny.";
+} else {
+	set Zeny, Zeny-.zAmount;
+if ( rand(100) < .zWinningRate ) {
+
+	mes "Congratulations! You won the Zeny Gamble! Nice luck you must have!";
+	set Zeny, Zeny+3*.zAmount;
+} else {
+	mes "Sorry, but you didn't win.";
+	}
+}
+close;
+}
+prontera,155,183,5	script	Cash Points Gambler	757,{
+set .@cgam$, "[^FF0000Cash Points Gambler^000000]";
+set .cAmount, 500; 
+set .cWinningRate, 50;
+mes .@cgam$;
+mes "Do you want to try and gamble "+.cAmount+" Cash Points to double your Cash Points?";
+mes "You have at least a ^FF000E"+.cWinningRate+"^000000% chance to win!";
+next;
+if( select("Yes:No") == 2 ) close;
+if(#CASHPOINTS < .cAmount) {
+	mes .cgam$;
+	mes "You need at least "+.cAmount+" Cash Points.";
+} else {
+	set #CASHPOINTS, #CASHPOINTS-.cAmount;
+if ( rand(100) < .cWinningRate ) {
+	set #CASHPOINTS, #CASHPOINTS+2*.cAmount+500;
+	mes "Congratulations! You won the Cash Points Gamble! Nice luck you must have!";
+} else {
+	mes "Sorry, but you didn't win.";
+	}
+}
+close;
+}*/
+eden,100,144,4	script	eSper Gambler	502,{
+mes .@espg$ = "[^FF0000eSper Gambler^000000]";
+mes "Hello "+strcharinfo(0)+".";
+mes "What would you like to try and gamble?";
+next;
+switch(select("Zeny:Cash Points") ) {
+case 1:
+mes .@zgam$ = "[^FF0000Zeny Gambler^000000]";
+.zAmount = 1000;
+.zWinningRate = 50;
+mes "Do you want to try and gamble "+.zAmount+" Zeny to triple what you spent?";
+mes "You have at least a ^FF000E"+.zWinningRate+"^000000% chance to win! So be cautious!";
+next;
+if( select("Yes:No") == 2 ) close;
+if(Zeny < .zAmount) {
+	mes .zgam$;
+	mes "You don't have "+.zAmount+" Zeny.";
+} else {
+	Zeny-=.zAmount;
+if ( rand(100) < .zWinningRate ) {
+
+	mes "Congratulations! You won the Zeny Gamble! Nice luck you must have!";
+	Zeny+=3*.zAmount;
+} else {
+	mes "Sorry, but you didn't win.";
+	}
+}
+close;
+case 2:
+mes .@cgam$ = "[^FF0000Cash Points Gambler^000000]";
+.cAmount = 500; 
+.cWinningRate = 50;
+mes "Do you want to try and gamble "+.cAmount+" Cash Points to double what you spent?";
+mes "You have at least a ^FF000E"+.cWinningRate+"^000000% chance to win!";
+next;
+if( select("Yes:No") == 2 ) close;
+if(#CASHPOINTS < .cAmount) {
+	mes .cgam$;
+	mes "You need at least "+.cAmount+" Cash Points.";
+} else {
+#CASHPOINTS-=.cAmount;
+if ( rand(100) < .cWinningRate ) {
+#CASHPOINTS+=2*.cAmount+500;
+	mes "Congratulations! You won the Cash Points Gamble! Nice luck you must have!";
+} else {
+	mes "Sorry, but you didn't win.";
+	}
+}
+close;
+}
+}

@@ -1,0 +1,16 @@
+﻿Build started 4/8/2015 12:03:41 PM.
+     1>Project "G:\Hercules\costumeitem\costumeitem.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         E:\Microsoft Visual Studio\VC\bin\CL.exe /c /I..\src\common /I..\3rdparty\msinttypes\include /ZI /nologo /W3 /WX- /Od /Oy- /D _WINDLL /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"costumeitem\Debug\\" /Fd"costumeitem\Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt ..\src\plugins\costumeitem.c
+         costumeitem.c
+     1>g:\hercules\src\plugins\costumeitem.c(1072): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 e:\microsoft visual studio\vc\include\stdio.h(304) : see declaration of 'sscanf'
+       Link:
+         E:\Microsoft Visual Studio\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\plugins\\costumeitem.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\plugins\costumeitem.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\plugins\costumeitem.lib" /MACHINE:X86 /DLL costumeitem\Debug\costumeitem.obj
+            Creating library ..\plugins\costumeitem.lib and object ..\plugins\costumeitem.exp
+         costumeitem.vcxproj -> G:\Hercules\costumeitem\..\plugins\costumeitem.dll
+     1>Done Building Project "G:\Hercules\costumeitem\costumeitem.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.96

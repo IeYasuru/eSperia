@@ -1,0 +1,56 @@
+-	script	welcometoesperia	-1,{
+
+OnPCLoginEvent:
+if(getgmlevel() == 0 && #New_Player == 0 && BaseLevel==1 && JobLevel == 1)
+	{
+		if (Sex)
+		{
+		announce "Please welcome Mr. "+strcharinfo(0)+"  to eSperiaRO!",bc_all,0x00ff66;
+		announce "Don't be shy "+strcharinfo(0)+" be sure to say hi! Enjoy your unique e'S'perience! here at eSperiaRO!",bc_self,0x00ff66;
+		announce "And for joining our server, here's a welcome package!",bc_self,0x00ff66;
+		getitem 616, 5;
+		getitem 14216, 1;
+		getitem 14208, 1;
+		#New_Player = 1;
+		end;
+	} else {
+		announce "Please welcome Mrs. "+strcharinfo(0)+"  to eSperiaRO!",bc_all,0x00ff66;
+		announce "Don't be shy "+strcharinfo(0)+" be sure to say hi! Enjoy your unique e'S'perience! here at eSperiaRO!",bc_self,0x00ff66;
+		announce "And for joining our server, here's a welcome package!",bc_self,0x00ff66;
+		getitem 616, 5;
+		getitem 14216, 1;
+		getitem 14208, 1;
+		#New_Player = 1;
+		end;
+			}
+	} else {
+	if(#New_Player == 1) end;
+	}
+	end;
+}
+-	script	skiptut	-1,{
+OnPCLoginEvent:
+if (getgmlevel() == 0 && tutorial == 0)
+{
+	mes "[^FF0000eSperiaRO^000000]";
+	mes "Welcome to eSperiaRO!";
+	mes "Would you like to skip the Tutorial and enter the Main Town?";
+	next;
+	mes "[^FF0000eSperiaRO^000000]";
+	mes "If you are new to eSperiaRO, I would suggest not skipping the Tutorial and Proceeding.";
+	next;
+	menu "Warp to Main Town",skip,"Don't skip Tutorial",dskip;
+skip:
+	tutorial = 1;
+	savepoint "eden",92,123;
+	warp "eden",92,123;
+	end;
+dskip:
+	mes "[^FF0000eSperiaRO^000000]";
+	mes "Have fun and take notes on your tutorial so you don't forget things!";
+	tutorial = 1;
+	close;
+	end;
+}
+end;
+}

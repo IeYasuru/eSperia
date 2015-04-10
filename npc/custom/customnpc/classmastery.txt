@@ -1,0 +1,123 @@
+function	script	ClaMas	{
+	@eac = eaclass();
+	setarray .@class_list$[0],"Lord Knight","High Priest","High Wizard","Whitesmith","Sniper","Assassin Cross","","Paladin","Champion","Professor","Stalker","Creator",(Sex?"Clown":""),(Sex?"":"Gypsy");
+	mes "[^FF0000Class Mastery Menu^000000]";
+	switch(select(implode(.@class_list$,":"))) {
+		default:
+		.@job = 4007 + @menu;
+			if( .@job == oriclass ) { // There's no need to unlock your starting class :3
+				mes "This is your original class.";
+			} else if( !classunlock[@menu-1] ) {
+				mes "Your manual has not been enchanted with " + .@class_list$[@menu-1] + " Class. Please visit the manager.";
+				close;
+			}
+			if( Class == .@job ) {
+				mes "You are already " + .@class_list$[@menu-1] + ". Please choose another class.";
+				close;
+			}
+			mes "Are you sure you'd like to change into " + .@class_list$[@menu-1] + "?";
+			mes "^FF0000Warning: Skills and stats will be reset!^000000";
+			switch(select("Yes:No")) {
+			case 1:
+				mes "Enjoy!";
+				atcommand "@jobchange " + .@job;
+				atcommand "@jlvl 70";
+				resetskill;
+				resetstatus;
+				close;
+			case 2:
+				mes "Come back if you change your mind!";
+				close;
+			}
+	}
+}
+
+eden,90,137,4	script	Class Mastery Manager	421,{
+	.@n$ = "[^FF0000Class Mastery Manager^000000]";
+	mes .@n$;
+	if( Class == Job_Novice || Class == Job_Novice_High || Upper == 2 ) {
+		mes "I'm sorry, but Novice, High Novice and Baby Classes can't use my services.";
+		close;
+	}
+	if( BaseLevel != .b_lvl ) {
+		mes "I'm sorry, but you need to be at least Base Level ^0000FF"+ .b_lvl +"^000000 to use my services.";
+		close;
+	}
+	if( JobLevel < .j_lvl ) {
+		mes "I'm sorry, but you need to be at least Job Level ^0000FF"+ .j_lvl +"^000000 to use my services.";
+		close;
+	}
+	if( !countitem(501) ) {
+		mes "Well hello there "+strcharinfo(0)+"!";
+		mes "I have this special ^FFF000Class Mastery Manual^000000 that allows you to change into Transcendent Class of your choice.";
+		next;
+		mes .@n$;
+		mes "You may always revert back to your original class, skills and stats will be reset though.";
+		next;
+		mes .@n$;
+		mes "Interested in buying a Class Mastery Manual for 500,000 Zeny?";
+		next;
+		switch(select("Yes!:Not interested.")) {
+		case 1:
+			if (Zeny >= 500000) {
+				mes .@n$;
+				mes "Here is your Class Mastery Manual, stop by to purchase a Class to use with your Class Mastery Manual!";
+				next;
+				mes .@n$;
+				mes "I have recorded your starting class as " + jobname(Class) + ".";
+				oriclass = Class;
+				Zeny -= 500000;
+				getitem(501,1);
+			} else {
+				mes .@n$;
+				mes "It seems you don't have 500,000 Zeny...";
+				mes "Come back when you do!";
+			}
+			close;
+		case 2:
+			mes .@n$;
+			mes "Well, if you change your mind, you're welcome to stop by again anytime.";
+			close;
+		}
+	}
+	mes "Hello there "+strcharinfo(0)+"!";
+	mes "I see you have the ^FFD000Class Mastery Manual^000000.";
+	next;
+	mes .@clsm$;
+	mes "Which Class would you like it to be enchanted with?";
+	mes "All classes can be bought for 100,000,000 Zeny.";
+	next;
+	setarray .@class_list$[0],"Lord Knight","High Priest","High Wizard","Whitesmith","Sniper","Assassin Cross","","Paladin","Champion","Professor","Stalker","Creator",(Sex?"Clown":""),(Sex?"":"Gypsy");
+	switch(select(implode(.@class_list$,":"))) {
+		default:
+		mes .@n$;
+		.@job = 4007 + @menu;
+		if( oriclass == .@job ) {
+			mes "This is your starting class. It's already unlocked.";
+			close;
+		}
+		if( classunlock[@menu-1] ) {
+			mes "You've already unlocked this class. You really don't need to pay me again... Unless you really want to.";
+			emotion e_flash;
+			close;
+		}
+		if( Zeny < 100000000 ) {
+			mes "Your funds are not enough to repay my work. Please come again when you have the requested amount of zeny.";
+			close;
+		}
+		mes "Very well. Watch closely as magic imbues this manual...";
+		Zeny -= 100000000;
+		classunlock[@menu-1] = 1;
+		specialeffect EF_SOULLINK;
+		next;
+		mes .@n$;
+		mes "I'm done with my part of work. Just use the manual when you want to change your class~";
+		close;
+	}
+close;
+
+OnInit:
+	.b_lvl = 99;
+	.j_lvl = 70;
+	end;
+}

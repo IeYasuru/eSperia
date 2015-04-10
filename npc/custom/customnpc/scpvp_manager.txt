@@ -1,0 +1,425 @@
+/*------------------------------------------------------------------------------------------------------
+//Part 2
+//The Sub-Class PvP Manager Script
+//Won't work in other types of PvP, so no abuse, only activates when warped to PVP during the NPC :D
+//TIP: To prove functionality, turn the variable isscpvp to 0 and 1 with pvp on and off, will gain and not gain points.
+//Compatible with: Hercules
+//Created by Aeromesi
+//Special credits to GmOcean for making the Sub Class Granter possible for this script to exist. :)
+//Version 1.0
+eden and eden_pvp are my own maps, change them in according to your maps and your own PvP map for the mapflags also!
+--------------------------------------------------------------------------------------------------------*/
+eden,90,134,6	script	Sub-Class PvP	935,{
+/* Item ID's (What's used in the shop for your items)*/
+
+item1_id = 5200;
+item2_id = 5201;
+item3_id = 5202;
+item4_id = 5203;
+item5_id = 5204;
+item6_id = 5205;
+item7_id = 5206;
+item8_id = 5207;
+item9_id = 5208;
+item10_id = 5209;
+item11_id = 5210;
+item12_id = 616;
+item13_id = 604;
+last_i_id = 501;
+
+/* Item Prices */
+ 
+item1 = 10000;
+item2 = 7000;
+item3 = 5000;
+item4 = 3500;
+item5 = 3000;
+item6 = 2500;
+item7 = 2000;
+item8 = 1500;
+item9 = 1000;
+item10 = 750;
+item11 = 500;
+item12 = 200;
+item13 = 150;
+last_item = 100;
+
+/* Item Amount (How much of a certain item you want to give according to the id's you placed in the item*_ variables */
+
+item1_am = 1;
+item2_am = 1;
+item3_am = 1;
+item4_am = 1;
+item5_am = 1;
+item6_am = 1;
+item7_am = 1;
+item8_am = 1;
+item9_am = 1;
+item10_am = 1;
+item11_am = 1;
+item12_am = 2;
+item13_am = 25;
+last_i_am = 50;
+
+.@pvpm$ = "[^0000FFSub-Class PvP Manager^000000]";
+	if (!sub_class)
+	{
+		mes .@pvpm$;
+	mes "You must have a Sub-Class in order to participate in Sub-Class PvP.";
+	close;
+
+	} else {
+	
+if (agitcheck() || agitcheck2()) {
+	mes .@pvpm$;
+	mes "Sorry, my service is disabled during WoE";
+	close;
+
+	} else
+	mes .@pvpm$;
+mes "Hello "+strcharinfo(0)+".";
+mes "I see that you chose your Sub Class!";
+	next;
+
+mes .@pvpm$;
+mes "For every kill you get, you gain a Sub Class PvP Point.";
+next;
+mes .@pvpm$;
+mes "You may spend your Sub Class PvP Points for  unique Headgears or other miscellaneous items only found here in my shop.";
+next;
+mes .@pvpm$;
+mes "But to start shopping and spending your Sub-Class PvP Points, you must enter Sub-Class PvP!";
+next;
+mes .@pvpm$;
+mes "What would you like to do ^FF0000"+strcharinfo(0)+"^000000?";
+next;
+SCPVP_MENU:
+.@pvpm$ = "[^0000FFSub-Class PvP Manager^000000]";
+switch(select("Enter Sub Class PvP!","Exit","Sub-Class PvP Points - "+ ((subclasskills == 0)?"^f94a32":"^0000ff")+ ""+subclasskills+"^000000","^E066FFSub Class PvP Points Shop^000000")) {
+
+case 1:
+isscpvp = 1;
+	mes .@pvpm$;
+	mes "Good luck!";
+	mes "Enjoy the unique e'S'perience";
+	mes "Only found here at eSperia Ragnarok Online!";
+	next;
+	announce "Player "+strcharinfo(0)+" has just entered Sub-Class PvP!",bc_all,0x00ff66;
+	warp "eden_pvp",56,150;
+end;
+
+case 2:
+	mes .@pvpm$;
+	mes "Alright "+strcharinfo(0)+".";
+	mes "If you decide to change your mind, come again!";
+	close;
+case 3:
+	if (subclasskills == 0)
+{
+	mes .@pvpm$;
+	mes "You currently have no Sub class PvP Points. Go out there and start PvPing!";
+	next;
+callsub SCPVP_MENU;
+} else
+	mes .@pvpm$;
+	mes "You currently have ^0000FF"+subclasskills+"^000000 Sub Class PvP Points";
+	next;
+callsub SCPVP_MENU;
+case 4:
+
+	setarray .@scpshop$[0],	
+""+getitemname(item1_id)+" ("+ ((subclasskills >= item1)?"^0000ff":"^f94a32")+""+subclasskills+"^000000/^0000ff"+item1+"^000000):"+getitemname(item2_id)+" ("+ ((subclasskills >= item2)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item2+"^000000):"+getitemname(item3_id)+" ("+ ((subclasskills >= item3)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item3+"^000000):"+getitemname(item4_id)+" ("+ ((subclasskills >= item4)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item4+"^000000):"+getitemname(item5_id)+" ("+ ((subclasskills >= item5)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item5+"^000000):"+getitemname(item6_id)+" ("+ ((subclasskills >= item6)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item6+"^000000):"+getitemname(item7_id)+" ("+ ((subclasskills >= item7)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item7+"^000000):"+getitemname(item8_id)+" ("+ ((subclasskills >= item8)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item8+"^000000):"+getitemname(item9_id)+" ("+ ((subclasskills >= item9)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item9+"^000000):"+getitemname(item10_id)+" ("+ ((subclasskills >= item10)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item10+"^000000):"+getitemname(item11_id)+" ("+ ((subclasskills >= item11)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item11+"^000000):"+getitemname(item12_id)+" ("+ ((subclasskills >= item12)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item12+"^000000):"+getitemname(item13_id)+" ("+ ((subclasskills >= item13)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+item13+"^000000):"+getitemname(last_i_id)+" ("+ ((subclasskills >= last_item)?"^0000ff":"^f94a32") +""+subclasskills+"^000000/^0000ff"+last_item+"^000000)";
+	
+	mes .@pvpm$;
+	mes "So, what would you like to buy with your ^FF0000Sub Class PvP Points?^000000";
+next;
+switch(select(.@scpshop$))
+{
+case 1:
+	mes .@pvpm$;
+if ( subclasskills >= item1)
+{
+	mes "You have at least ^0C00F7"+item1+"^000000 Sub Class PvP Points!";
+	getitem item1_id, item1_am;
+subclasskills -= item1;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+	mes "You need at least ^0C00F7"+item1+"^000000 Sub Class PvP Points!";
+	next;
+	callsub SCPVP_MENU;
+}
+case 2:
+	mes .@pvpm$;
+if ( subclasskills >= item2)
+{
+	mes "You have at least ^0C00F7"+item2+"^000000 Sub Class PvP Points!";
+	getitem item2_id, item2_am;
+subclasskills -= item2;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item2+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 3:
+	mes .@pvpm$;
+if ( subclasskills >= item3)
+{
+	mes "You have at least ^0C00F7"+item3+"^000000 Sub Class PvP Points!";
+	getitem item3_id, item3_am;
+subclasskills -= item3;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item3+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+
+case 4:
+	mes .@pvpm$;
+if ( subclasskills >= item4)
+{
+	mes "You have at least ^0C00F7"+item4+"^000000 Sub Class PvP Points!";
+	getitem item4_id, item4_am;
+subclasskills -= item4;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item4+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 5:
+	mes .@pvpm$;
+if ( subclasskills >= item5)
+{
+	mes "You have at least ^0C00F7"+item5+"^000000 Sub Class PvP Points!";
+	getitem item5_id, item5_am;
+subclasskills -= item5;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item5+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 6:
+	mes .@pvpm$;
+if ( subclasskills >= item6)
+{
+	mes "You have at least ^0C00F7"+item6+"^000000 Sub Class PvP Points!";
+	getitem item6_id, item6_am;
+subclasskills -= item6;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item6+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 7:
+	mes .@pvpm$;
+if ( subclasskills >= item7)
+{
+	mes "You have at least ^0C00F7"+item7+"^000000 Sub Class PvP Points!";
+	getitem item7_id, item7_am;
+subclasskills -= item7;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item7+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 8:
+	mes .@pvpm$;
+if ( subclasskills >= item8)
+{
+	mes "You have at least ^0C00F7"+item8+"^000000 Sub Class PvP Points!";
+	getitem item8_id, item8_am;
+subclasskills -= item8;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item8+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 9:
+	mes .@pvpm$;
+if ( subclasskills >= item9)
+{
+	mes "You have at least ^0C00F7"+item9+"^000000 Sub Class PvP Points!";
+	getitem item9_id, item9_am;
+subclasskills -= item9;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item9+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 10:
+	mes .@pvpm$;
+if ( subclasskills >= item10)
+{
+	mes "You have at least ^0C00F7"+item10+"^000000 Sub Class PvP Points!";
+	getitem item10_id, item10_am;
+subclasskills -= item10;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item10+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 11:
+	mes .@pvpm$;
+if ( subclasskills >= item11)
+{
+	mes "You have at least ^0C00F7"+item11+"^000000 Sub Class PvP Points!";
+	getitem item11_id, item11_am;
+subclasskills -= item11;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item11+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 12:
+	mes .@pvpm$;
+if ( subclasskills >= item12)
+{
+	mes "You have at least ^0C00F7"+item12+"^000000 Sub Class PvP Points!";
+	getitem item12_id, item12_am;
+subclasskills -= item12;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item13+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+case 13:
+	mes .@pvpm$;
+if ( subclasskills >= item13)
+{
+	mes "You have at least ^0C00F7"+item13+"^000000 Sub Class PvP Points!";
+	mes "Enjoy your "+getitemname(item13_id)+" x ^f94a32"+item13_am+"^000000!";
+	getitem item13_id, item13_am;
+subclasskills -= item13;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+item13+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+}
+case 14:
+	mes .@pvpm$;
+if ( subclasskills >= last_item)
+{
+	mes "You have at least ^0C00F7"+last_item+"^000000 Sub Class PvP Points!";
+	getitem last_i_id, last_i_am;
+subclasskills -= last_item;
+next;
+	callsub SCPVP_MENU;
+} else
+{
+
+	mes "You need at least ^0C00F7"+last_item+"^000000 Sub Class PvP Points!";
+	callsub SCPVP_MENU;
+}
+}
+}
+}
+-	script	subclasswins	-1,{
+OnPCKillEvent:
+if (!sub_class) { end; }
+// Sub-Class only
+if (isscpvp == 1) {
+++subclasskills;
+end;
+} else
+end;
+}
+-	script	subclassdeath	-1,{
+OnPCDieEvent:
+if (!sub_class) { end; }
+if (isscpvp == 1) {
+--subclasskills;
+isscpvp = 0;
+}
+DeathChecker:
+}
+-	script	Death::DeathChecker	-,{
+OnPCDieEvent:
+if (subclasskills <= 0) {
+subclasskills = 0;
+isscpvp = 0;
+end;
+}
+}
+eden_pvp,56,148,4	script	Return to Maintown	935,{
+mes.@pvpm$ = "[^0000FFSub-Class PvP Manager^000000]";
+mes "Do you wish to quit Sub Class PvP and return to Main Town?";
+next;
+switch(select("Yes:No") )
+{
+case 1:
+
+warp "eden",91,123;
+isscpvp = 0;
+end;
+
+case 2:
+mes .@pvpm$ = "[^0000FFSub-Class PvP Manager^000000]";
+mes "Good luck! Keep on Fighting!";
+close;
+}
+}
+// ====================================================
+// ====================================================
+// == Change these to your PVP map for Sub Class PvP ==
+// ====================================================
+// ====================================================
+
+// No Memory =============================
+eden_pvp	mapflag	nomemo
+
+// No Save ===============================
+eden_pvp	mapflag	nosave	SavePoint
+
+// No Teleport ===========================
+eden_pvp	mapflag	noteleport
+
+// No Warp ===============================
+eden_pvp	mapflag	nowarp
+
+// No Return, Stop people from being pulled out of jail (warpparty/guild)
+eden_pvp	mapflag	noreturn
+
+// PvP ===================================
+eden_pvp	mapflag	pvp
+
+// No Party ==============================
+eden_pvp	mapflag	pvp_noparty
+eden_pvp	mapflag	nocommand

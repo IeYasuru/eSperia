@@ -1,0 +1,21 @@
+prontera,155,181,5 script Sample 757,{
+set .itemID,7539;
+set .Amount,1000;
+set .WinningRate,10;
+mes "Do you want to gamble with yours "+getitemname( .itemID )+" ?";
+mes "You need "+.Amound+" of it...and only "+.WinningRate+" % to win.";
+next;
+if( select("Yes:No") == 2 ) close;
+if( countitem( .itemID ) < .Amount ){
+  mes "You didnt have enough of "+.Amount+" each.";
+}else{
+  delitem .itemID,.Amount;
+  if( rand(100) < 10 ){
+   mes "Congratz...you win..";
+   getitem .itemID,3 * .Amount;
+  }else{
+   mes "Failed";
+  }
+}
+close;
+}

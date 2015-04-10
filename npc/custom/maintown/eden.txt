@@ -1,0 +1,247 @@
+
+// Warps
+// Eden Warps
+eden,162,132,0	warp	eden#01	1,1,eden_fild01,29,23
+eden_fild01,21,15,0	warp	eden#02	1,1,eden,158,127
+eden_fild01,182,180,0	warp	eden#03	1,1,eden_fild02,31,25
+eden_fild02,28,17,0	warp	eden#04	1,1,eden_fild01,177,179
+eden_fild02,166,184,0	warp	eden#05	1,1,eden_fild03,34,37
+eden_fild03,21,22,0	warp	eden#06	5,5,eden_fild02,164,179
+eden_in01,171,228,0	warp	eden#07	1,1,eden_in01,309,20
+eden_in01,309,16,0	warp	eden#08	1,1,eden_in01,171,224
+eden_in01,171,186,0	warp	eden#09	1,1,eden,26,61
+eden,24,63,0	warp	eden#10	1,1,eden_in01,171,189
+eden,62,73,0	warp	eden#11	1,1,eden_in01,190,303
+eden_in01,189,298,0	warp	eden#12	1,1,eden,62,69
+eden_in01,109,298,0	warp	eden#13	1,1,eden,92,82
+eden,90,85,0	warp	eden#14	1,1,eden_in01,110,301
+eden_in01,190,319,0	warp	eden#15	1,1,eden_in01,275,333
+eden_in01,275,337,0	warp	eden#16	1,1,eden_in01,190,322
+eden,42,30,0	warp	eden#17	1,1,eden_in01,29,215
+eden_in01,30,212,0	warp	eden#18	1,1,eden,45,33
+eden,94,146,0	warp	eden#19	1,1,eden_in01,110,20
+eden_in01,109,16,0	warp	eden#20	1,1,eden,94,141
+eden_in01,124,38,0	warp	eden#21	1,1,eden_in01,236,36
+eden_in01,239,36,0	warp	eden#22	1,1,eden_in01,126,38
+eden_in01,95,38,0	warp	eden#23	1,1,eden_in01,199,36
+eden_in01,196,36,0	warp	eden#24	1,1,eden_in01,92,37
+eden_in01,30,298,0	warp	eden#27	1,1,eden,35,66
+eden,35,70,0	warp	eden#28	1,1,eden_in01,30,301
+
+// Farm
+eden,86,119,0	warp	eden#farm1	1,1,eden,82,119
+eden,84,119,0	warp	eden#farm2	1,1,eden,88,119
+
+// Cave
+eden_fild03,112,154,0	warp	eden#d1	2,2,eden_dun01,29,48
+eden_dun01,29,52,0	warp	eden#d2	4,2,eden_fild03,109,151
+eden_dun01,33,234,0	warp	eden#d3	4,2,eden_dun02,217,15
+eden_dun02,217,11,0	warp	eden#d4	4,2,eden_dun01,33,230
+eden_dun02,138,222,0	warp	eden#d5	4,2,eden_dun03,48,168
+eden_dun03,48,164,0	warp	eden#d6	4,2,eden_dun02,138,217
+eden_dun03,153,99,0	warp	eden#d7	4,2,bastion01,103,123
+bastion01,103,119,0	warp	eden#d8	4,2,eden_dun03,153,95
+
+// Mapflags
+eden	mapflag	nightenabled
+eden	mapflag	noteleport
+eden	mapflag	nobranch
+eden	mapflag	nopenalty
+eden	mapflag	town
+eden_dun01	mapflag	nomemo
+eden_dun02	mapflag	nomemo
+eden_dun03	mapflag	nomemo
+bastion01	mapflag	nomemo
+
+eden,22,152,50,50	monster	Poring	1002,15,10000,5000,0
+eden,22,152,50,50	monster	Roda Frog	1012,15,10000,5000,0
+eden,22,152,50,50	monster	Thief Bug	1051,7,10000,5000,0
+eden,22,152,50,50	monster	Spore	1014,5,10000,5000,0
+eden,22,152,50,50	monster	Fabre	1184,5,10000,5000,0
+
+// Additional eden Addons by Aeromesi
+
+eden,97,14,6	script	Suspicious Man	494,{
+if ( .smant == 0 ) {
+mes "[Suspicious Man]";
+mes "What are you doing? Mind your own business, now scram!";
+.smant = 1;
+close;
+} else {
+mes "[Suspicious Man]";
+mes "I thought I told you to leave, now get out of my sight!";
+close;
+}
+}
+
+eden,91,125,4,	script	Novice Grounds	2_BOARD1,{
+
+mes "[Novice Grounds]";
+mes "NOTICE: 24/7 OPEN NOVICE TRAINING";
+mes "Welcome to eSperia! Enjoy your stay and enjoy the unique eSperience!";
+close;
+}
+eden,46,76,4	script	Card Workshop	603,{
+	.zenycost = 200000; // Set base cost in zeny of the card remover services
+	.percardcost = 25000; // set cost per card of the card remover services
+	.faildestroy =1; // Should the card remover have a chance of failure that destroys items? 1 = Yes, 0 = No.
+
+	disable_items;
+mes .@cws$ = "[Card Workshop]";
+mes "So what's your name?";
+next;
+mes .@cws$;
+mes "Nice to meet'cha "+strcharinfo(0)+"!";
+mes "I can remove your cards for you, right here right now! Interested?";
+next;
+switch(select("Yes I am!:What do you charge?:No thanks.")) {
+	case 1:
+		mes .@cws$;
+		mes "Very well. Which item shall I examine for you?";
+		next;
+
+		setarray .@position$[1], "Head","Body","Left hand","Right hand","Robe","Shoes","Accessory 1","Accessory 2","Head 2","Head 3";
+		set .@menu$,"";
+		for( set .@i,1; .@i <= 10; set .@i,.@i+1 )
+		{
+			if( getequipisequiped(.@i) )
+			set .@menu$, .@menu$ + .@position$[.@i] + "-" + "[" + getequipname(.@i) + "]";
+
+			set .@menu$, .@menu$ + ":";
+		}
+		set .@part,select(.@menu$);
+		if(!getequipisequiped(.@part)) {
+			mes .cws$;
+			mes "Sorry but you're not wearing anything that I can remove cards from.";
+			close;
+		}
+		if(getequipcardcnt(.@part) == 0) {
+			mes .@cws$;
+			mes "Sorry but there are no cards compounded on this item. I can do nothing with it, I'm afraid.";
+			close;
+		}
+		set .@cardcount,getequipcardcnt(.@part);
+		
+		if (!checkweight(1202,(.@cardcount+1))) {
+			mes "^3355FFJust a minute!";
+			mes "I can't offer any of my";
+			mes "services to you because";
+			mes "you're carrying too much";
+			mes "stuff. Put your extra items in";
+			mes "Kafra Storage and come again~";
+			close;
+		}
+		mes .@cws$;
+		mes "This item has " + .@cardcount + " cards compounded on it. To perform my magic, I will need " + (.zenycost+(.@cardcount * .percardcost)) + " zeny, a ^0000FFStar Crumb^000000, and a ^0000FFYellow Gemstone^000000.";
+		next;
+		if(select("Very well. Do it.:Nevermind.") == 2) {
+			mes .@cws$;
+			mes "Very well. Return at once if you seek my services.";
+			close;
+		}
+		if((Zeny < (.zenycost+(.@cardcount * .percardcost))) || (countitem(1000) < 1) || (countitem(715) < 1)) {
+			mes .@cws$;
+			mes "You do not have all the items I require to work my magic, child. Come again when you do.";
+			close;
+		}
+		mes .@cws$;
+		mes "Before I begin, I must warn you--I may fail. If I do, I may destroy the cards, the item, or both. I do not give refunds. That being said, which is more important to you: The cards, or the item?";
+		next;
+		switch(select("I changed my mind about this.:The item.:The cards.")) {
+		case 1:
+			mes .@cws$;
+			mes "Very well. Return at once if you seek my services.";
+			close;
+		case 2:
+			set .@failtype,1;
+			break;
+		case 3:
+			set .@failtype,2;
+		}
+		mes .@cws$;
+		mes "Very well. I shall begin.";
+		Zeny -= (.zenycost+(.@cardcount * .percardcost));
+		delitem 1000,1;
+		delitem 715,1;
+		
+		// Replace the constants in the next 3 lines with failure chance values defined in refine_db.txt
+		// First value = Total failure chance (item and cards destroyed)
+		// Second value = Partial failure chance (one or the other is destroyed, player decides which one is safe)
+		// Third value = Harmless failure chance (all that's lost is your investment)
+
+		set .@failchance,rand(100);
+		if (.faildestroy==1) {
+			if(.@failchance < 2) {
+				next;
+				failedremovecards .@part,0;
+				mes .@cws$;
+				mes "The process was a total failure. I am afraid the item and the cards were destroyed.";
+				close;
+			}
+
+			if(.@failchance < 8) {
+				if (.@failtype == 1) {
+					next;
+					failedremovecards .@part,1;
+					mes .@cws$;
+					mes "While I have managed to remove the cards from the item, they were destroyed in the process. The item, however, is okay.";
+					close;
+				}
+
+				if (.@failtype == 2) {
+					next;
+					failedremovecards .@part,2;
+					mes .@cws$;
+					mes "Most unfortunate. I succeeded at removing the cards, but the item itself was destroyed in the process.";
+					close;
+				}
+			}
+		}
+
+		if(.@failchance < 10) {
+			next;
+			failedremovecards .@part,3;
+			mes .@cws$;
+			mes "I have failed to remove the cards. Luckily, however, both the item and the cards are still okay.";
+			close;
+		}
+		next;
+		successremovecards .@part;
+			mes .@cws$;
+		mes "The process was a success. Here are your cards and your item. Farewell.";
+		close;
+	case 2:
+			mes .@cws$;
+		mes "I charge a flat fee of "+.zenycost+" zeny, plus "+.percardcost+" zeny for each card I remove from the item. In addition, I need a star crumb and a yellow gemstone to work my magic.";
+		close;
+	case 3:
+			mes .@cws$;
+		mes "Very well. Return at once if you seek my services.";
+		close;
+	}
+}
+eden,161,125,4	script	Imprisoned Spirit	651,{
+if (ftalk == 1) {
+mes "Nothing comes from the Imprisoned Spirit";
+close;
+} else
+mes .@spib$ = "[Imprisoned Spirit]";
+mes "Hello, I am currently stuck in the between.";
+mes "After escaping Rune-Midgard I had to travel through the in between to arrive at Eden, sadly I had to give up my body, my soul only made it to Eden.";
+next;
+mes .@spib$;
+mes "I can never come back to Rune-Midgard, or be released from my eternal imprisonment, I beg you, please save Rune-Midgard!";
+next;
+mes .@spib$;
+mes "Proceed to the end of the in between to enter the Rift to deliver you to Rune-Midgard!";
+mes "I am putting my soul to sleep. Restore our Kingdom "+strcharinfo(0)+"!";
+ftalk = 1;
+close;
+}
+eden_in01,111,21,4	script	Butler	109,{
+mes "[Butler]";
+mes "Well hello there young adventurer.";
+mes "Just up ahead you may Reset Skills or Change your Job!";
+mes "Enjoy and don't mind me~";
+close;
+}

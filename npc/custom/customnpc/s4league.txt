@@ -1,0 +1,1878 @@
+//===========================================
+//============ [Script By] ==================
+//===========================================
+//= Vykimo
+//== Recoded by: Aeromesi & Garr
+//===========================================
+//============ [Compatible emulator] ================
+//===========================================
+/* Hercules emulator */
+//===========================================
+//===========================================
+//============ [Variables] ==================
+//========== 1 = Vrai, 0 = Faux =============
+//= $resetball > controle si la balle reste à la base
+//= $ball > Si un joueur a la balle ou non.
+//= $@score_td_rouge > score des rouges
+//= $@score_td_bleu > score des Bleus.
+//= $baseball_b > gère l'éffet du but bleu
+//= $baseball_r > gère l'éffet du but rouge
+//= $@party_r > id party rouge
+//= $@party_b > id party bleue
+//= $duree_s4 > durée du jeu définie dans le npc du début
+//= $@mitemps > 1 =  Première Mi-temps, 2 = Deuxieme mi-temps, 3 = En Attente, 0 = Jeu Off
+//= $nameRID > Rid du compte du joueur
+//= $name_j$ > nom du joueur ayant la balle
+//= $ball_alone > Si la balle est seule ou pas
+//= $paletteBleuS4/RougeS4 > id de la palette de couleur
+//===========================================
+//============ [Npcs]  ======================
+//===========================================
+//= #decompter_s4 > décompte du lancement du jeu
+//= #effectball > Gère les effects de la balle sur un joueur ou npc
+//= #ball_reset > npc quand la balle est a la base
+//= #ball > npc quand la balle est seule "en liberté"
+//= #game > gère tout ce qui est jeu, etc..
+//= Touch Down#bleu > cages des bleus
+//= Touch Down#rouge > cages des rouges
+//= #Timer_S4 > détermine le temps du jeu
+//= 20min_s4, 10min_s4, 15min_s4 > Pour le temps
+//= #player > lorsqu'il meurt les 7 secondes d'attente
+//= s4#sound > gère les sons.
+//= s4#points > gère les points sur la mini-map
+//===========================================
+-	script	s4#points	-1,{
+OnPoints:
+	while(1) {
+		function go_s4_points;
+		go_s4_points($@party_b); //on appelle la function
+		go_s4_points($@party_r);
+		sleep2 700;
+	}
+
+	function go_s4_points {
+		deletearray $@partymemberaid[0],$@partymembercount; // on écrase, m'étonnerait que l'array soit effacé avant d'être remplie des nouvelles données
+		getpartymember(getarg(0),2);
+
+		if(($ball == 0) && ($resetball == 1)) {
+			$@whereisballx = 88;
+			$@whereisbally = 78;
+		}
+		else if(($ball == 0) && ($resetball == 0)) {
+			getmapxy($@whereisball$,$@whereisballx,$@whereisbally,1,"#ball");
+		}
+		for(.@i = 0; .@i < $@partymembercount; .@i++) {
+			if( attachrid($@partymemberaid[.@i]) ) {
+				viewpoint 1,60,78,1,0x0000FF;
+				viewpoint 1,117,78,2,0xFF0000;
+				viewpoint 1,$@whereisballx,$@whereisbally,3,0xFFCC00;
+			}
+		}
+	}
+
+}
+
+-	script	s4#sound	-1,{
+OnSoundR:
+	function play_s4_sound; // on définit la fonction
+	play_s4_sound($@party_b, "red"); //inversion des couleurs
+	play_s4_sound($@party_r, "blue");
+	end;
+
+OnSoundB:
+	function play_s4_sound; // on définit la fonction
+	play_s4_sound($@party_b, "blue"); //on appelle la function
+	play_s4_sound($@party_r, "red");
+	end;
+
+	function play_s4_sound {
+		deletearray $@partymemberaid[0],$@partymembercount; // on écrase, m'étonnerait que l'array soit effacé avant d'être remplie des nouvelles données
+		getpartymember(getarg(0),2);
+
+		if($@sound_s4 == 1) .@sound$ = "s4_"+getarg(1)+".wav" ;
+		else if($@sound_s4 == 2) .@sound$ = "s4_"+getarg(1)+"die.wav" ;
+		else if($@sound_s4 == 3) .@sound$ = "s4_td"+getarg(1)+".wav" ;
+
+		for(.@i = 0; .@i < $@partymembercount; .@i++) {
+			if( attachrid($@partymemberaid[.@i]) ) {
+				soundeffect .@sound$,0;
+			}
+		}
+	}
+
+OnStart:
+	soundeffectall "s4_go.wav",0,"tunnel",0,0,300,300;
+	end;
+
+OnReset:
+	soundeffectall "s4_reset.wav",0,"tunnel",0,0,300,300;
+	end;
+
+OnRebour:
+	switch(rand (1 , 2)) {
+		case 1:
+		soundeffectall "s4_rebour.wav",0,"tunnel",0,0,300,300;
+		end;
+		case 2:
+		soundeffectall "s4_rebourg.wav",0,"tunnel",0,0,300,300;
+		end;
+	}
+}
+
+
+tunnel,141,177,4	script	Exit	723,{
+	mes "^BF0073[Exit]^000000";
+	mes "Want to exit Touch Down and Proceed to Eden?";
+	next;
+	@palette = getlook(7);
+	switch(select("Yes, I want to go to town.","No, I stay a little longer.")) {
+	case 2:
+		close;
+	case 1:
+		if( (@palette == $paletteRougeS4) || (@palette == $paletteBleuS4) ) {
+			mes "^BF0073[Sortie]^000000";
+			mes "Pass the dressing room to resume your clothes.";
+			setlook 7, savePalette;
+			next;
+		}
+		mes "^BF0073[Sortie]^000000";
+		mes "Warning! immediate departure!";
+		close2;
+		if( savePointOldMap$ != "tunnel" )
+			savepoint savePointOldMap$, savePointOldX, savePointOldY;
+		else
+			savepoint "eden",92,122;
+		warp "Save",0,0;
+		end;
+	}
+}
+
+eden,99,127,6	script	Organizer	125,{
+	if(($@mitemps == 3) && (getmapusers("tunnel") == 0)) $@mitemps = 0;
+	getpartymember($@party_b);
+	.@joueurs_bleu = $@partymembercount;
+	getpartymember($@party_r);
+	.@joueurs_rouge = $@partymembercount;
+	mes "[Organizer]";
+	mes "The purpose of ^ff0000Touch Down^000000 is to bring the 'fumbi' in the opposing goal, but we must add to this concept fairly common as both teams are equipped as in deathmatch, and that the difficulty lies in the failure not get killed when it has the fumbi.";
+	next;
+	if($@mitemps == 0) {
+		.@i1$ = "^0000ffCreate a Room^000000";
+	} else if($@mitemps == 1) {
+		.@mitemps$ = "First Half Time";
+		.@i1$ = "^0000ffTouch Down - "+.@mitemps$+" - ("+ .@joueurs_bleu +"/^ff0000"+.max_j+"^0000ff-"+ .@joueurs_rouge +"/^ff0000"+.max_j+"^0000ff)^000000";
+	} else if($@mitemps == 3) {
+		.@mitemps$ = "Pending";
+		.@i1$ = "^0000ffTouch Down - "+.@mitemps$+" - ("+ .@joueurs_bleu +"/^ff0000"+.max_j+"^0000ff-"+ .@joueurs_rouge +"/^ff0000"+.max_j+"^0000ff)^000000";
+	} else if($@mitemps == 2) {
+		.@mitemps$ = "Second Half Time";
+		.@i1$ = "^0000ffTouch Down - "+.@mitemps$+" - ("+ .@joueurs_bleu +"/^ff0000"+.max_j+"^0000ff-"+ .@joueurs_rouge +"/^ff0000"+.max_j+"^0000ff)^000000";
+	}
+	if(select(.@i1$) == 1) {
+		if(.@i1$ == "^0000ffCreate a Room^000000") {
+			if( $@on_fait_une_salle ) {
+				mes "[Organizer]";
+				mes "A player is creating his room, wait a minute.";
+				close;
+			}
+			$@on_fait_une_salle = 1;
+			initnpctimer;
+			while(1) {
+				mes "[Organizer]";
+				mes "Choose your max number of players per team:";
+				next;
+				switch(select("6","10")) {
+				case 1: .max_j = 6; break;
+				case 2: .max_j = 10; break;
+				}
+				mes "[Organizer]";
+				mes "Choose the time of the Match:";
+				next;
+				switch(select("^ff0000Change choices^000000","30 minutes","20 minutes","15 minutes","10 minutes")) {
+				case 1: continue;
+				case 2: .minute = 30; break;
+				case 3: .minute = 20; break;
+				case 4: .minute = 15; break;
+				case 5: .minute = 10; break;
+				}
+				mes "[Organizer]";
+				mes "Choose a password:";
+				next;
+				switch(select("^ff0000Change choices^000000","No Password","Enter Password")) {
+				case 1: continue;
+				case 2:	.mdp = 0; break;
+				case 3: input .mdp$; .mdp = 1; break;
+				}
+				if($@mitemps == 0) {
+					mes "[Organizer]";
+					mes "You'll now wait in the waiting room of your companions.";
+					close2;
+					mapwarp "tunnel","prontera",156,191;
+					$duree_s4 = .minute;
+					$@mitemps = 3;
+					$@leader_salle = strcharinfo(PC_NAME);
+					$@max_j = .max_j;
+					savePointOldMap$ = getsavepoint(0);
+					savePointOldX = getsavepoint(1);
+					savePointOldY = getsavepoint(2);
+					savepoint "tunnel",141,183;
+					warp "Save",0,0;
+					$@on_fait_une_salle = 0;
+					end;
+				} else {
+					mes "[Organizer]";
+					mes "Canceled.";
+					mes "The game is already running.";
+					close;
+				}
+			}
+		} else {
+			while(1) {
+				mes "[Organizer]";
+				mes "What do you want to do?";
+				if( $@mitemps == 1 || $@mitemps == 2 ) {
+					getpartymember($@party_b);
+					.@joueurs_bleu = $@partymembercount;
+					getpartymember($@party_r);
+					.@joueurs_rouge = $@partymembercount;
+					next;
+					switch(select("Enter the waiting room.","Compare teams")) {
+					case 2:
+						mes "^ff0000[Team Red]^000000";
+						getpartymember($@party_r);
+						.@partymembercount = $@partymembercount;
+						copyarray .@partymembername$[0],$@partymembername$[0],.@partymembercount;
+						for (.@i = 0; .@i < .@partymembercount; .@i++) {
+							mes (.@i + 1) + ". ^0000FF" + .@partymembername$[.@i] + "^000000";
+						}
+						next;
+						mes "^ff0000[Team Blue]^000000";
+						getpartymember($@party_b);
+						.@partymembercount = $@partymembercount;
+						copyarray .@partymembername$[0],$@partymembername$[0],.@partymembercount;
+						for (.@i = 0; .@i < .@partymembercount; .@i++) {
+							mes (.@i + 1) + ". ^0000FF" + .@partymembername$[.@i] + "^000000";
+						}
+						next;
+						continue;
+
+					case 1:
+						if((.@joueurs_bleu != .max_j) || (.@joueurs_rouge != .max_j)) {
+							if(.mdp ==  1) {
+								mes "[Organizer]";
+								mes "Between password";
+								input .@test_mdp$;
+								if(.@test_mdp$ == .mdp$) {
+									@kelteam = (.@joueurs_bleu < .@joueurs_rouge)?1:2;
+									savePointOldMap$ = getsavepoint(0);
+									savePointOldX = getsavepoint(1);
+									savePointOldY = getsavepoint(2);
+									announce "You go to the " + ((@kelteam == 1)?"Blue":"Red") + " Team Please.",bc_self;
+									close2;
+									savepoint "tunnel",((@kelteam == 1)?130:153),191;
+									warp "Save",0,0;
+									end;
+								} else {
+									mes "Wrong Pass.";
+									close;
+								}
+							} else {
+								@kelteam = (.@joueurs_bleu < .@joueurs_rouge)?1:2;
+								savePointOldMap$ = getsavepoint(0);
+								savePointOldX = getsavepoint(1);
+								savePointOldY = getsavepoint(2);
+								savepoint "tunnel",((@kelteam == 1)?130:153),191;
+								warp "Save",0,0;
+								close2;
+								sleep2 5000;
+								announce "You go to the " + ((@kelteam == 1)?"Blue":"Red") + " Team Please.",bc_self;
+								end;
+							}
+						} else {
+							mes "[Organizer]";
+							mes "There's no room, sorry.";
+							close;
+						}
+						end;
+					}
+				}
+				next;
+				switch(select("Enter the waiting room.","Compare teams")) {
+				case 2:
+					mes "^ff0000[Team Red]^000000";
+					getpartymember($@party_r);
+					.@partymembercount = $@partymembercount;
+					copyarray .@partymembername$[0],$@partymembername$[0],.@partymembercount;
+					for (.@i = 0; .@i < .@partymembercount; .@i++) {
+						mes (.@i + 1) + ". ^0000FF" + .@partymembername$[.@i] + "^000000";
+					}
+					next;
+					mes "^ff0000[Team Blue]^000000";
+					getpartymember($@party_b);
+					.@partymembercount = $@partymembercount;
+					copyarray .@partymembername$[0],$@partymembername$[0],.@partymembercount;
+					for (.@i = 0; .@i < .@partymembercount; .@i++) {
+						mes (.@i + 1) + ". ^0000FF" + .@partymembername$[.@i] + "^000000";
+					}
+					next;
+					continue;
+
+				case 1:
+					if((.@joueurs_bleu != .max_j) || (.@joueurs_rouge != .max_j)) {
+						if(.mdp ==  1) {
+							mes "[Organizer]";
+							mes "Between Password";
+							input .@test_mdp$;
+							if(.@test_mdp$ == .mdp$) {
+								savePointOldMap$ = getsavepoint(0);
+								savePointOldX = getsavepoint(1);
+								savePointOldY = getsavepoint(2);
+								savepoint "tunnel",141,182;
+								warp "Save",0,0;
+								close;
+							} else {
+								mes "Wrong Password.";
+								close;
+							}
+						} else {
+							savePointOldMap$ = getsavepoint(0);
+							savePointOldX = getsavepoint(1);
+							savePointOldY = getsavepoint(2);
+							savepoint "tunnel",141,182;
+							warp "Save",0,0;
+							close;
+						}
+					} else {
+						mes "[Organizer]";
+						mes "There's no room, sorry.";
+						close;
+					}
+				end;
+				}
+			}
+		}
+	} else {
+		mes "[Organizer]";
+		mes "???";
+		close;
+	}
+
+OnTimer120000:
+	if($@mitemps == 0) {
+		$@on_fait_une_salle = 0;
+		end;
+	}
+	end;
+}
+//==========================================================================================================
+tunnel,144,190,3	script	Red Team	911,{
+	if( $@confirmation == 2 ) {
+		areaannounce "tunnel",68,189,85,178,"The player"+strcharinfo(PC_NAME) +" is ready.",0;
+		savepoint "tunnel",77,181;
+		warp "Save",0,0;
+		s4_debut = 1;
+		end;
+	}
+	if( $@confirmation == 1 ) {
+		if( (getcharid(1) != $@party_r) && (getcharid(1) != $@party_b) ) {
+			mes "[Red Team]";
+			mes "Teams are being validated.";
+			mes "Retry in a minute.";
+			close;
+		}
+		if (getcharid(1) == $@party_b) {
+			mes "[Red Team]";
+			mes "Confirm your team on the other side";
+			close2;
+		}
+		if (getcharid(1) == $@party_r) {
+			mes "[Red Team]";
+			mes "will confirm your locker.";
+			areaannounce "tunnel",68,189,85,178,"The Player "+strcharinfo(PC_NAME) +" is ready.",0;
+			savepoint "tunnel",77,181;
+			warp "Save",0,0;
+			s4_debut = 1;
+			close;
+		}
+OnBleu:
+		if( (getpartyname($@party_r) == "null") || (getpartyname($@party_b) == "null") ) {
+			announce "Teams are no longer valid, the match is canceled ...",bc_npc|bc_map;
+			stopnpctimer;
+			callsub OnAnnulationMatch;
+			end;
+		} else if( ($@confirmation != 2) && ($@confirmationBleuS4 == 1) && ($@confirmationRougeS4 == 1) ) {
+			announce "The match will start soon! ALL players are asked to go to their respective locker rooms.",bc_npc|bc_map;
+			stopnpctimer;
+			$@confirmation = 2;
+			donpcevent "#decompter_s4::OnStart";
+		}
+		end;
+	}
+	if(@kelteam == 1) {
+		mes "[Red Team]";
+		mes "The head of Blue Team awaits you!";
+		close;
+	}
+	if( ($@mitemps == 2) || ($@mitemps == 1) ) {
+		getpartymember($@party_r);
+		.@joueurs_rouge = $@partymembercount;
+		if( .@joueurs_rouge != $@max_j ) {
+			if( $@mitemps == 1 ) .@mitemps$ = "First Half Time";
+			else if( $@mitemps == 2 ) .@mitemps$ = "Second Half Time";
+			mes "[Red Team]";
+			mes "The match is underway at the ^0000ff"+.@mitemps$+"^000000";
+			mes "The Red Team is the team ^0000ff"+ getpartyname($@party_r)+"^000000.";
+			mes "Would you join the group?";
+			next;
+			switch(select("Yes","No")) {
+			case 1:
+				mes "[Red Team]";
+				mes "We sent you a request to join the Red Team.";
+				close2;
+				partyinvite $@party_r;
+				if( getcharid(1) != 0 ) {
+					mapannounce "tunnel","A new player joins Red Team!",0xff0000,bc_all;
+					savepoint "tunnel",77,181;
+					warp "Save",0,0;
+					s4_debut = 1;
+					end;
+				}
+				else {
+					end;
+				}
+			case 2:
+				mes "[Red Team]";
+				mes "Bye!";
+				close;
+			}
+		} else {
+		mes "[Red Team]";
+		mes "Sorry, but there is no more room in the Red Team.";
+		close;
+		}
+	}
+	if( !getcharid(1) ) {
+		mes "[Red Team]";
+		mes "Registration is reserved for parties, and you have no party. Come with your friends!";
+		close;
+	}
+	if( getcharid(1) == $@party_b ) {
+		mes "[Red Team]";
+		mes "Oh oh! A player from the opposing team! Prepare yourself for a battle with the better team!";
+		mes "The formidable team of RED!";
+		close;
+	}
+	if( ($@party_r != 0) && (getpartyname($@party_r) != "null") ) {
+		if( $@party_r == getcharid(1) ) {
+			mes "[Red Team]";
+			mes "Would you unsubscribe your team";
+			mes "Or go on the field?";
+			next;
+			switch(select("Yes, we give up.:No, nothing...:To the field!")) {
+			case 1:
+				announce "The team \""+getpartyname($@party_r)+"\"withdraws, there is no more Red Team!",bc_yellow|bc_map;
+				$@party_r = 0;
+				close;
+			case 2:
+				close;
+			case 3:
+				areaannounce "tunnel",68,189,85,178,"The player"+strcharinfo(PC_NAME) +" is ready.",0;
+				savepoint "tunnel",77,181;
+				warp "Save",0,0;
+				s4_debut = 1;
+				end;
+			}
+		}
+		mes "[Assistant Coach]";
+		mes "A party  named \""+getpartyname($@party_r)+"\" already registered as a Red Team.";
+		close;
+	}
+	mes "[Red Team]";
+	mes "Would you like to register your party as a Red Team?";
+	next;
+	if( select("Yes.","No, thank you.") == 2 ) close;
+	if( $@party_r == 0 || (getpartyname($@party_r) == "null") ) {
+		$@party_r = getcharid(1);
+		mes "[Red Team]";
+		mes "Your party is now registered, good luck!";
+		announce "Party \""+getpartyname($@party_r)+"\" is now registered as a Red Team!",bc_yellow|bc_map;
+		close2;
+		doevent "Red Team::OnInscriptionEquipe";
+	}
+	else {
+		mes "[Red Team]";
+		mes "Oh, no luck! Another party was faster to register ...";
+		close2;
+	}
+
+	end;
+
+
+OnInscriptionEquipe:
+	if( ($@party_r != 0) && ($@party_b != 0) && (getpartyname($@party_r) != "null") && (getpartyname($@party_b) != "null") && ($@team_bleu == 1) ) {
+		announce "Both teams are ready : \""+getpartyname($@party_r)+"\" and \""+getpartyname($@party_b)+"\".",bc_yellow|bc_map;
+		announce "You have 1 minute for each team to confirm their registration with the jewel.",bc_yellow|bc_map;
+		if( $@confirmation != 1 ) {
+			$@confirmation = 1;
+			initnpctimer;
+		}
+	}
+	end;
+
+OnTimer60000:
+	announce "The confirmation deadline is exceeded, the match is canceled ...",bc_npc|bc_map;
+	callsub OnAnnulationMatch;
+	end;
+
+OnAnnulationMatch:
+	$@confirmation = 0;
+	$@team_bleu = 0;
+	$@party_b = 0;
+	$@party_r = 0;
+	$@confirmationRougeS4 = 0;
+	$@confirmationBleuS4 = 0;
+	mapwarp "tunnel","prontera",156,191;
+	return;
+
+OnInit:
+	mapwarp "tunnel","prontera",156,191;
+	end;
+}
+//==========================================================================================================
+tunnel,139,190,6	script	Blue Team	912,{
+	if($@confirmation ==2) {
+		areaannounce "tunnel",8,189,25,178,"The player"+strcharinfo(PC_NAME) +" is ready",0;
+		savepoint "tunnel",16,182;
+		warp "Save",0,0;
+		s4_debut = 1;
+		end;
+	}
+	if($@confirmation == 1) {
+		if( (getcharid(1) != $@party_b) && (getcharid(1) != $@party_r) ) {
+			mes "[Blue Team]";
+			mes "Teams are being validated.";
+			mes "Retry in a minute.";
+			close;
+		}
+		if( getcharid(1) == $@party_r ) {
+			mes "[Blue Team]";
+			mes "Confirm your side.";
+			close2;
+			donpcevent "Red Team::OnBleu";
+			end;
+		}
+		if( getcharid(1) == $@party_b ) {
+			mes "[Blue Team]";
+			mes "Will confirm your locker.";
+			close2;
+			areaannounce "tunnel",8,189,25,178,"The player "+strcharinfo(PC_NAME) +" is ready.",0;
+			savepoint "tunnel",16,182;
+			warp "Save",0,0;
+			s4_debut = 1;
+			end;
+		}
+		end;
+	}
+	if( @kelteam == 2 ) {
+		mes "[Blue Team]";
+		mes "The head of Red Team awaits you!";
+		close;
+	}
+	if( ($@mitemps == 2) || ($@mitemps == 1) ) {
+		getpartymember($@party_b);
+		.@joueurs_bleu = $@partymembercount;
+		if( .@joueurs_bleu != $@max_j ) {
+			if( $@mitemps == 1 ) .@mitemps$ = "First Half Time";
+			else if( $@mitemps == 2 ) .@mitemps$ = "Second Half Time";
+			mes "[Blue Team]";
+			mes "The match is underway at the ^0000ff"+.@mitemps$+"^000000";
+			mes "The Blue Team is the team \"^0000ff"+ getpartyname($@party_b)+"^000000.\"";
+			mes "Would you like to join them?";
+			next;
+			switch(select("Yes","No")) {
+			case 2:
+				mes "[Red Team]";
+				mes "Bye!";
+				close;
+			case 1:
+				mes "[Blue Team]";
+				mes "We sent you a request to go into the Red Team.";
+				close2;
+				partyinvite $@party_b;
+				if(getcharid(1) != 0) {
+					warp "tunnel",16,182;
+					mapannounce "tunnel","A new player joins Blue Team!",0xff0000,bc_all;
+					savepoint "tunnel",16,182;
+					warp "Save",0,0;
+					s4_debut = 1;
+					end;
+				} else {
+					end;
+				}
+			}
+		} else {
+		mes "[Blue Team]";
+		mes "Sorry but there is more room in the Blue Team.";
+		close;
+		}
+	}
+	if( !getcharid(1) ){
+		mes "[Blue Team]";
+		mes "Registration is reserved for parties, and you have no party. Come with your friends!";
+		close;
+	}
+	if( getcharid(1) == $@party_r ) {
+		mes "[Blue Team]";
+		mes "Oh oh! A player from the opposing team! Prepare yourself to face the better team!";
+		mes "The formidable Blue Team!";
+		close;
+		}
+		if( ($@party_b != 0) && (getpartyname($@party_b) != "null") ) {
+			if( $@party_b == getcharid(1) ) {
+				mes "[Blue Team]";
+				mes "Would you unsubscribe your team";
+				mes "Or go on the field?";
+				next;
+				switch(select("Yes, we give up.:No, nothing...:To the field!")) {
+				case 1:
+					announce "Party \""+getpartyname($@party_b)+"\" withdraws, there is no more Blue Team!",bc_yellow|bc_map;
+					$@party_b = 0;
+					close;
+				case 2:
+					close;
+				case 3:
+					areaannounce "tunnel",8,189,25,178,"The player"+strcharinfo(PC_NAME) +" is ready",0;
+					savepoint "tunnel",16,182;
+					warp "Save",0,0;
+					s4_debut = 1;
+					end;
+			}
+		}
+		mes "[Assistant Coach]";
+		mes "A party  named \""+getpartyname($@party_b)+"\" already registered as a Blue Team.";
+		close;
+	}
+	mes "[Team Blue]";
+	mes "Would you register your group as Team Blue?";
+	next;
+	if (select("Yes, we will.","No.")==2) close;
+	if ( $@party_b == 0 || (getpartyname($@party_b)=="null")) {
+		$@party_b = getcharid(1);
+		mes "[Blue Team]";
+		mes "Your party is now registered, good luck!";
+		announce "Party \""+getpartyname($@party_b)+"\" is registered as a Blue Team!",bc_yellow|bc_map;
+		close2;
+		$@team_bleu = 1;
+		sleep2 5000;
+		doevent "Red Team::OnInscriptionEquipe";
+	} else {
+		mes "[Blue Team]";
+		mes "Oh, no luck! Another party was faster to register ...";
+		close2;
+	}
+	end;
+
+OnAnnulationMatch:
+	$@confirmation = 0;
+	$@team_bleu = 0;
+	$@party_b = 0;
+	$@party_r = 0;
+	$@confirmationRougeS4 = 0;
+	$@confirmationBleuS4 = 0;
+	mapwarp "tunnel","prontera",156,191;
+	return;
+}
+//==========================================================================================================
+tunnel,76,188,1	script	Confirmation Red	844,{
+	if( $@confirmation == 1 ) {
+		if( (getcharid(1) != $@party_r) && (getcharid(1) != $@party_b) ) {
+			mes "[Red Team]";
+			mes "Teams are being validated.";
+			mes "Please retry in a minute.";
+			close;
+		}
+		if( getcharid(1) == $@party_b ) {
+			mes "[Red Team]";
+			mes "Confirm your team on the other side";
+			close2;
+			donpcevent "Red Team::OnBleu";
+			end;
+		}
+		if( getcharid(1) == $@party_r ) {
+			mes "[Red Team]";
+			mes "Thank you for confirming the Red Team.";
+			if( $@confirmationRougeS ) close;
+			$@confirmationRougeS4 = 1;
+			close2;
+			donpcevent "Red Team::OnBleu";
+			end;
+		}
+	} else {
+		end;
+	}
+}
+tunnel,16,188,1	script	Confirmation Blue	844,{
+	if( $@confirmation == 1 ) {
+		if( (getcharid(1)!=$@party_b) && (getcharid(1)!=$@party_r) ) {
+			mes "[Blue Team]";
+			mes "Teams are being validated.";
+			mes "Retry in 1 minute.";
+			close;
+		}
+		if( getcharid(1) == $@party_r ) {
+			mes "[Blue Team]";
+			mes "Confirm your team on the other side";
+			close2;
+			donpcevent "Red Team::OnBleu";
+			end;
+		}
+		if( getcharid(1) == $@party_b ) {
+			mes "[Blue Team]";
+			mes "Thank you for confirming the Blue Team.";
+			if( $@confirmationBleuS4 ) close;
+			$@confirmationBleuS4 = 1;
+			close2;
+			donpcevent "Red Team::OnBleu";
+			end;
+		}
+	} else {
+		end;
+	}
+}
+//==========================================================================================================
+tunnel,82,190,3	script	Dressing Room#Red	910,{
+	if( ($@confirmation == 2) || s4_debut ) {
+		if( getcharid(1) == $@party_r ) {
+			.@palette = getlook(7);
+			savepoint "tunnel",144,78;
+			viewpoint 1,60,78,1,0xFF0000;
+			viewpoint 1,117,78,2,0x0000FF;
+			percentheal 100,100;
+			if( .@palette != $paletteRougeS4 ) {
+				if( .@palette != $paletteBleuS4 ) savePalette = .@palette;
+				setlook 7, $paletteRougeS4;
+				if( ($@mitemps == 1) ||($@mitemps == 2) ) {
+					warp "tunnel",144,78;	
+					viewpoint 1,60,78,1,0xFF0000;	
+					viewpoint 1,117,78,2,0x0000FF;
+				}
+			}
+		}
+	}
+end;
+OnInit:
+	$paletteRougeS4 = 79;
+	end;
+}
+//==========================================================================================================
+tunnel,144,78,1	script	regen01	-1,1,1,{
+OnTouch:
+percentheal 100,100;
+end;
+}
+//==========================================================================================================
+tunnel,10,190,6	script	Dressing Room#Blue	910,{
+	if( ($@confirmation == 2) || (s4_debut ==1) ) {
+		if( getcharid(1)==$@party_b ) {
+			.@palette = getlook(7);
+			savepoint "tunnel",33,78;
+			viewpoint 1,60,78,1,0xFF0000;	
+			viewpoint 1,117,78,2,0x0000FF;
+			percentheal 100,100;
+			if( .@palette != $paletteBleuS4 ) {
+				if( .@palette != $paletteRougeS4 ) savePalette = .@palette;
+				setlook 7, $paletteBleuS4;
+				if( ($@mitemps == 1) ||($@mitemps == 2) ) {
+				warp "tunnel",33,78;	
+				viewpoint 1,60,78,1,0xFF0000;	
+				viewpoint 1,117,78,2,0x0000FF;
+				}
+			}
+		}
+	}
+	end;
+OnInit:
+	$paletteBleuS4 = 78;
+	end;
+}
+//==========================================================================================================
+tunnel,33,78,1	script	regen02	-1,1,1,{
+OnTouch:
+percentheal 100,100;
+end;
+}
+//==========================================================================================================
+-	script	#decompter_s4	139,{
+end;
+
+OnStart:
+mapannounce "tunnel","The game S4 league clubhouse starts in 1 minute.",bc_map;
+initnpctimer;
+end;
+
+OnTimer57000:
+mapannounce "tunnel","Attention! 3 seconds left!",bc_map;
+end;
+OnTimer58000:
+mapannounce "tunnel","Attention! 2 seconds left!",bc_map;
+end;
+OnTimer59000:
+mapannounce "tunnel","Attention! 1 second left!",bc_map;
+end;
+OnTimer60000:
+mapannounce "tunnel","The game S4 League Begins! Good Luck!",bc_map;
+warpparty "SavePointAll",0,0,$@party_r;
+warpparty "SavePointAll",0,0,$@party_b;
+stopnpctimer;
+$resetball = 1;
+$ball = 0;
+$@score_td_rouge = 0;
+$@score_td_bleu = 0;
+$baseball_r = 0;
+$baseball_b = 0;
+$name_j$ = "";
+$nameRID = 0;
+$ball_alone = 0;
+setnpcdisplay("#ball_reset", 139);
+setnpcdisplay("#ball", 10099);
+donpcevent "#Timer_S4::OnStart";
+donpcevent "#effectball::OnEffectsBall";
+donpcevent "#effectball::OnEffectsMur";
+donpcevent "s4#points::OnPoints";
+sleep2 2000;
+donpcevent "s4#sound::OnStart";
+donpcevent "#game::OnTestSiPersonne";
+end;
+
+}
+//==========================================================================================================
+
+tunnel,88,78,1	script	#ball_reset	400,2,2,{
+end;
+
+OnEffectReset:
+specialeffect	223;
+specialeffect 56;
+specialeffect 118;
+specialeffect 367;
+end;
+
+OnTouch:
+if( ($baseball_b != 1) || ($baseball_r != 1) ) {
+	if( $resetball == 1 ) {
+		$resetball = 0;
+		$nameRID = getcharid(3);
+		$name_j$ = strcharinfo(PC_NAME);
+		if( getcharid(1) == $@party_b ) {	$@sound_s4 = 1;	donpcevent "s4#sound::OnSoundB";	}
+		if( getcharid(1) == $@party_r ) {	$@sound_s4 = 1;	donpcevent "s4#sound::OnSoundR";	}
+		setnpcdisplay("#ball_reset", 10099);
+		donpcevent "#game::OnStart";
+	}
+}
+end;
+}
+//==========================================================================================================
+
+tunnel,0,0,0	script	#effectball	139,{
+end;
+
+OnEffectsBall:
+while(1) {
+	if( $baseball_r ) {
+		donpcevent "Touch Down#rouge::OnEffectGoal";
+		sleep2 1000;
+		donpcevent "Touch Down#rouge::OnEffectGoal";
+		sleep2 1000;
+		continue;
+	}
+	if( $baseball_b ) {
+		donpcevent "Touch Down#bleu::OnEffectGoal";
+		sleep2 1000;
+		donpcevent "Touch Down#bleu::OnEffectGoal";
+		sleep2 1000;
+		continue;
+	}
+	if( !$ball && $resetball ) {
+		donpcevent "#ball_reset::OnEffectReset";
+		sleep2 1000;
+		donpcevent "#ball_reset::OnEffectReset";
+		sleep2 1000;
+		continue;
+	} else if( !$ball && !$resetball ) {
+		donpcevent "#ball::OnEffectAlone";
+		sleep2 1000;
+		donpcevent "#ball::OnEffectAlone";
+		sleep2 1000;
+		continue;
+	} else if( $ball ) {
+		if( $nameRID ) {
+			attachrid($nameRID);
+			changelook 3,500;
+			specialeffect2 223;
+			specialeffect2 56;
+			specialeffect2 367;
+			getmapxy($@whereisball$,$@whereisballx,$@whereisbally,0);
+			.@spplayer = MaxSp >> 3; // MaxSP/8
+			if( Sp > .@spplayer ) { //I think this is useless. 
+				Sp -= .@spplayer;
+			} else {
+				percentheal 0,-100;
+			}
+			sleep2 1000;
+			specialeffect2 223;
+			specialeffect2 56;
+			specialeffect2 367;
+			getmapxy($@whereisball$,$@whereisballx,$@whereisbally,0);
+			sleep2 1000;
+			continue;
+		} else {
+			setnpcdisplay("#ball_reset", 139);
+			mapannounce "tunnel","Fumbi was reset!",bc_map;
+			donpcevent "s4#sound::OnReset";
+			$resetball = 1;
+			$ball = 0;
+			$name_j$ = "";
+			$nameRID = 0;
+			$ball_alone = 0;
+			continue;
+		}
+	}
+}
+
+
+OnEffectsMur:
+OnTimer1500:
+donpcevent "MurRouge#s4::OnEffect";
+donpcevent "MurRouge#s4r::OnEffect";
+donpcevent "MurRouge#s4r1::OnEffect";
+donpcevent "MurRouge#s4r2::OnEffect";
+donpcevent "MurBleu#s4::OnEffect";
+donpcevent "MurBleu#s4b::OnEffect";
+donpcevent "MurBleu#s4b1::OnEffect";
+donpcevent "MurBleu#s4b2::OnEffect";
+initnpctimer;
+end;
+
+}
+//==========================================================================================================
+tunnel,0,0,0	script	#game	-1,{
+OnStart:
+$ball = 1;
+mapannounce "tunnel","Player "+ $name_j$ + " just got the fumbi!",bc_map;
+end;
+
+OnPCLogoutEvent:
+if( strcharinfo(PC_MAP) == "tunnel") {
+	setlook 7, savePalette;
+	if( savePointOldMap$ != "tunnel" )
+		savepoint savePointOldMap$, savePointOldX, savePointOldY;
+	else
+		savepoint "eden",99,127;
+	warp "Save",0,0;
+	if($name_j$ == strcharinfo(PC_NAME)) {
+		$ball = 0;
+		$ball_alone = 1;
+		$name_j$ = "";
+		$nameRID = 0;
+		setnpcdisplay("#ball", 400);
+		initnpctimer;
+		getmapxy(.@mapname$,.@mapx,.@mapy,0);
+		movenpc "#ball",.@mapx,.@mapy;
+		end;
+	}
+}
+end;
+
+OnPCDieEvent:
+if ( strcharinfo(PC_MAP) == "tunnel") {
+	if( $name_j$ == strcharinfo(PC_NAME) ) {
+		$ball = 0;
+		$ball_alone = 1;
+		$name_j$ = "";
+		$nameRID = 0;
+		setnpcdisplay("#ball", 400);
+		changelook 3,0;
+		if( getcharid(1) == $@party_b ) {
+			$@sound_s4 = 2;
+			donpcevent "s4#sound::OnSoundB";
+		}
+		if( getcharid(1) == $@party_r ) {
+			$@sound_s4 = 2;
+			donpcevent "s4#sound::OnSoundR";
+		}
+		specialeffect2 310;
+		initnpctimer;
+		getmapxy(.@mapname$,.@mapx,.@mapy,0);
+		movenpc "#ball",.@mapx,.@mapy;
+		sleep2 1000;
+		mes "7";
+		sleep2 1000;
+		mes "6";
+		sleep2 1000;
+		mes "5";
+		sleep2 1000;
+		mes "4";
+		sleep2 1000;
+		mes "3";
+		sleep2 1000;
+		mes "2";
+		sleep2 1000;
+		mes "1";
+		sleep2 1000;
+		mes "";
+		warp "Save",0,0;
+		end;
+	} else {
+		if( getcharid(1) == $@party_b ) {
+			$@sound_s4 = 2;
+			donpcevent "s4#sound::OnSoundB";
+		}
+		if( getcharid(1) == $@party_r ) {
+			$@sound_s4 = 2;
+			donpcevent "s4#sound::OnSoundR";
+		}
+		specialeffect2 310;
+		sleep2 1000;
+		mes "7 ";
+		sleep2 1000;
+		mes "6";
+		sleep2 1000;
+		mes "5";
+		sleep2 1000;
+		mes "4";
+		sleep2 1000;
+		mes "3";
+		sleep2 1000;
+		mes "2";
+		sleep2 1000;
+		mes "1";
+		sleep2 1000;
+		mes "";
+		warp "Save",0,0;
+		close;
+	}
+}
+end;
+
+OnTimer20000:
+if( $ball_alone ) {
+	$resetball = 1;
+	$ball_alone = 0;
+	setnpcdisplay("#ball_reset", 139);
+	setnpcdisplay("#ball", 10099);
+	donpcevent "s4#sound::OnReset";
+	mapannounce "tunnel","Fumbi was reset!",bc_map;
+	stopnpctimer;
+	end;
+} else {
+	stopnpctimer;
+	end; 
+}
+
+OnTestSiPersonne:
+	while(1) {
+		if( (($@mitemps == 2) || ($@mitemps == 1)) && (getmapusers("tunnel") == 0) ) {
+			debugmes "S4 League match ends because : No Players";
+			if( $nameRID ) {
+			attachrid($nameRID);
+			changelook 3,0;
+			}
+			mapwarp "tunnel","tunnel",141,183;
+			$ball = 0;
+			$resetball = 1;
+			$@mitemps = 3;
+			$@party_b = 0;
+			$@party_r = 0;
+			setnpcdisplay("#ball_reset", 139);
+			setnpcdisplay("#ball", 10099);
+		} else {
+			sleep2 120000;
+			continue;
+		}
+	}
+}
+//==========================================================================================================
+
+tunnel,0,0,0	script	#ball	400,2,2,{
+end;
+
+OnEffectAlone:
+specialeffect	223;
+specialeffect 367;
+specialeffect	56;
+specialeffect 118;
+end;
+
+OnTouch:
+	if($ball_alone == 1) {
+		if( getcharid(1) == $@party_b ) {
+			$@sound_s4 = 1;
+			donpcevent "s4#sound::OnSoundB";
+		}
+		if( getcharid(1) == $@party_r ) {
+			$@sound_s4 = 1;
+			donpcevent "s4#sound::OnSoundR";
+		}
+		$ball_alone = 0;
+		$nameRID = getcharid(3);
+		$name_j$ = strcharinfo(PC_NAME);
+		donpcevent "#game::OnStart";
+		setnpcdisplay("#ball", 10099);
+	}
+	end;
+}
+//==========================================================================================================
+tunnel,114,79,1	script	MurRouge#s4r	139,1,2,{
+OnTouch:
+if( getcharid(1) == $@party_b ) {
+	specialeffect2 32;
+	atcommand "@die";
+	if( $ball ) {
+		if( $name_j$ == strcharinfo(PC_NAME) ) {
+			setnpcdisplay("#ball_reset", 139);
+			setnpcdisplay("#ball", 10099);
+			mapannounce "tunnel","Fumbi was reset!",bc_map;
+			donpcevent "s4#sound::OnReset";
+			$resetball = 1;
+			$ball = 0;
+			$name_j$ = "";
+			$nameRID = 0;
+			$ball_alone = 0;
+		}
+	}
+	end;
+} else if( getcharid(1) == $@party_r ) {
+	specialeffect2 44;
+	if($ball == 1) {
+		if( $name_j$ == strcharinfo(PC_NAME) ) {
+			setnpcdisplay("#ball_reset", 139);
+			setnpcdisplay("#ball", 10099);
+			mapannounce "tunnel","Fumbi was reset!",bc_map;
+			donpcevent "s4#sound::OnReset";
+			$resetball = 1;
+			$ball = 0;
+			$name_j$ = "";
+			$nameRID = 0;
+			$ball_alone = 0;
+		}
+	}
+}
+end;
+
+OnEffect:
+specialeffect 182;
+sleep2 1000;
+specialeffect 181;
+specialeffect 255;
+end;
+}
+
+tunnel,141,83,1	script	MurRouge#s4r1	139,{
+OnEffect:
+specialeffect 181;
+sleep2 1000;
+specialeffect 182;
+specialeffect 255;
+end;
+}
+
+tunnel,141,74,1	script	MurRouge#s4r2	139,{
+OnEffect:
+specialeffect 181;
+sleep2 1000;
+specialeffect 182;
+specialeffect 255;
+end;
+}
+
+tunnel,141,78,1	script	MurRouge#s4	139,1,8,{
+OnTouch:
+	if( getcharid(1) == $@party_b ) {
+		specialeffect2 32;
+		atcommand "@die";
+		if( $ball ) {
+			if($name_j$ == strcharinfo(PC_NAME)) {
+				setnpcdisplay("#ball_reset", 139);
+				setnpcdisplay("#ball", 10099);
+				mapannounce "tunnel","Fumbi was reset!",bc_map;
+				donpcevent "s4#sound::OnReset";
+				$resetball = 1;
+				$ball = 0;
+				$name_j$ = "";
+				$nameRID = 0;
+				$ball_alone = 0;
+			}
+		}
+		end;
+	} else if( getcharid(1) == $@party_r ) {
+		specialeffect2 44;
+		warp "tunnel",138,78;
+		if( $ball ) {
+			if($name_j$ == strcharinfo(PC_NAME)) {
+				setnpcdisplay("#ball_reset", 139);
+				setnpcdisplay("#ball", 10099);
+				mapannounce "tunnel","Fumbi was reset!",bc_map;
+				donpcevent "s4#sound::OnReset";
+				$resetball = 1;
+				$ball = 0;
+				$name_j$ = "";
+				$nameRID = 0;
+				$ball_alone = 0;
+			}
+		}
+	}
+	end;
+
+OnEffect:
+specialeffect 181;
+sleep2 1000;
+specialeffect 182;
+specialeffect 255;
+end;
+}
+
+tunnel,63,79,1	script	MurBleu#s4b	139,1,2,{
+OnTouch:
+	if(getcharid(1) == $@party_r) {
+		specialeffect2 32;
+		atcommand "@die";
+		if( $ball ) {
+			if($name_j$ == strcharinfo(PC_NAME)) {
+			setnpcdisplay("#ball_reset", 139);
+			setnpcdisplay("#ball", 10099);
+			mapannounce "tunnel","Fumbi was reset!.",bc_map;
+			donpcevent "s4#sound::OnReset";
+			$resetball = 1;
+			$ball = 0;
+			$name_j$ = "";
+			$nameRID = 0;
+			$ball_alone = 0;
+			}
+		}
+	} else if(getcharid(1) == $@party_b) {
+		specialeffect2 44;
+		if($ball == 1) {
+			if($name_j$ == strcharinfo(PC_NAME)) {
+				setnpcdisplay("#ball_reset", 139);
+				setnpcdisplay("#ball", 10099);
+				mapannounce "tunnel","Fumbi was reset!",bc_map;
+				donpcevent "s4#sound::OnReset";
+				$resetball = 1;
+				$ball = 0;
+				$name_j$ = "";
+				$nameRID = 0;
+				$ball_alone = 0;
+			}
+		}
+	}
+	end;
+
+OnEffect:
+specialeffect 181;
+sleep2 1000;
+specialeffect 182;
+specialeffect 257;
+end;
+}
+
+tunnel,36,84,1	script	MurBleu#s4b1	139,{
+OnEffect:
+specialeffect 181;
+sleep2 1000;
+specialeffect 182;
+specialeffect 257;
+end;
+}
+
+tunnel,36,74,1	script	MurBleu#s4b2	139,{
+OnEffect:
+specialeffect 181;
+sleep2 1000;
+specialeffect 182;
+specialeffect 257;
+end;
+}
+
+tunnel,36,79,1	script	MurBleu#s4	139,1,8,{
+OnTouch:
+	if( getcharid(1) == $@party_r ) {
+		specialeffect2 32;
+		atcommand "@die";
+		if( $ball == 1 ) {
+			if( $name_j$ == strcharinfo(PC_NAME) ) {
+				setnpcdisplay("#ball_reset", 139);
+				setnpcdisplay("#ball", 10099);
+				mapannounce "tunnel","Fumbi was reset!",bc_map;
+				donpcevent "s4#sound::OnReset";
+				$resetball = 1;
+				$ball = 0;
+				$name_j$ = "";
+				$nameRID = 0;
+				$ball_alone = 0;
+			}
+		}
+	} else if( getcharid(1) == $@party_b ) {
+		specialeffect2 44;
+		warp "tunnel",39,79;
+		if( $ball ) {
+			if( $name_j$ == strcharinfo(PC_NAME) ) {
+				setnpcdisplay("#ball_reset", 139);
+				setnpcdisplay("#ball", 10099);
+				mapannounce "tunnel","Fumbi was reset!",bc_map;
+				donpcevent "s4#sound::OnReset";
+				$resetball = 1;
+				$ball = 0;
+				$name_j$ = "";
+				$nameRID = 0;
+				$ball_alone = 0;
+			}
+		}
+	}
+	end;
+
+
+OnEffect:
+specialeffect 181;
+sleep2 1000;
+specialeffect 182;
+specialeffect 257;
+end;
+}
+//==========================================================================================================
+tunnel,60,78,0	script	Touch Down#bleu	139,2,2,{
+end;
+
+OnTouch:
+	if( $ball ) {
+		if( getcharid(1) == $@party_r ) {
+			if( $name_j$ == strcharinfo(PC_NAME) ) {
+				if( (getpartyname($@party_r) == "null") || (getpartyname($@party_b) == "null") ) {
+					announce "Teams are no longer valid, the match is cancelled ...",bc_npc|bc_map;
+					$resetball = 1;
+					$ball = 0;
+					$@score_td_rouge = 0;
+					$@score_td_bleu = 0;
+					$baseball_r = 0;
+					$baseball_b = 0;
+					$name_j$ = "";
+					$nameRID = 0;
+					$ball_alone = 0;
+					setnpcdisplay("#ball_reset", 139);
+					setnpcdisplay("#ball", 10099);
+					mapwarp "tunnel","tunnel",141,183;
+					end;
+				}
+				$ball = 0;
+				$@score_td_rouge += 1;
+				$baseball_b = 1;
+				$name_j$ = "";
+				$nameRID = 0;
+				$@sound_s4 = 3;
+				changelook 3,0;
+				donpcevent "s4#sound::OnSoundR";
+				specialeffect 18;
+				specialeffect 65;
+				specialeffect 262;
+				specialeffect 266;
+				specialeffect 276;
+				specialeffect 330;
+				mapannounce "tunnel","Yes! The Red Team scores!",bc_map;
+				initnpctimer;
+			}
+		}
+	}
+	end;
+	
+OnTimer10000:
+	mapannounce "tunnel","Game will restart in 10 seconds.",bc_map;
+	end;
+OnTimer11000:
+	mapannounce "tunnel","Game will restart in 9 seconds.",bc_map;
+	end;
+OnTimer12000:
+	mapannounce "tunnel","Game will restart in 8 seconds.",bc_map;
+	end;
+OnTimer13000:
+	mapannounce "tunnel","Game will restart in 7 seconds.",bc_map;
+	end;
+OnTimer14000:
+	donpcevent "s4#sound::OnRebour";
+	mapannounce "tunnel","Game will restart in 6 seconds.",bc_map;
+	end;
+OnTimer15000:
+	mapannounce "tunnel","Game will restart in 5 seconds.",bc_map;
+	end;
+OnTimer16000:
+	mapannounce "tunnel","Game will restart in 4 seconds.",bc_map;
+	end;
+OnTimer17000:
+	mapannounce "tunnel","Game will restart in 3 seconds.",bc_map;
+	end;
+OnTimer18000:
+	mapannounce "tunnel","Game will restart in 2 seconds.",bc_map;
+	end;
+OnTimer19000:
+	mapannounce "tunnel","Game will restart in 1 second.",bc_map;
+	end;
+OnTimer20000:
+	mapannounce "tunnel","Here we go again! Red "+$@score_td_rouge+" : "+$@score_td_bleu+" Blue ",bc_map;
+	warpparty "SavePointAll",0,0,$@party_r;
+	warpparty "SavePointAll",0,0,$@party_b;
+	stopnpctimer;
+	$resetball = 1;
+	$ball = 0;
+	$baseball_b = 0;
+	$name_j$ = "";
+	$nameRID = 0;
+	$ball_alone = 0;
+	donpcevent "s4#sound::OnStart";
+	setnpcdisplay("#ball_reset", 139);
+	setnpcdisplay("#ball", 10099);
+	end;
+
+OnEffectGoal:
+specialeffect	223;
+specialeffect	56;
+specialeffect	236;
+end;
+}
+//==========================================================================================================
+
+
+tunnel,117,78,0	script	Touch Down#rouge	139,2,2,{
+end;
+
+OnTouch:
+	if( $ball ) {
+		if( getcharid(1) == $@party_b ) {
+			if( $name_j$ == strcharinfo(PC_NAME) ) {
+			if ( (getpartyname($@party_r)=="null") || (getpartyname($@party_b)=="null") ) {
+				announce "Teams are no longer valid, the match is canceled ...",bc_npc|bc_map;
+				$resetball = 1;
+				$ball = 0;
+				$@score_td_rouge = 0;
+				$@score_td_bleu = 0;
+				$baseball_r = 0;
+				$baseball_b = 0;
+				$name_j$ = "";
+				$nameRID = 0;
+				$ball_alone = 0;
+				setnpcdisplay("#ball_reset", 139);
+				setnpcdisplay("#ball", 10099);
+				mapwarp "tunnel","tunnel",141,183;
+				end;
+			}
+			$ball = 0;
+			$@score_td_bleu = $@score_td_bleu+1;
+			$baseball_r = 1;
+			$name_j$ = "";
+			$nameRID = 0;
+			$@sound_s4 = 3;
+			donpcevent "s4#sound::OnSoundB";
+			specialeffect 18;
+			specialeffect 65;
+			specialeffect 330;
+			specialeffect 266;
+			specialeffect 276;
+			specialeffect 262;
+			changelook 3,0;
+			mapannounce "tunnel","Yeah! The Blue Team scores!",bc_map;
+			initnpctimer;
+			}
+		}
+	}
+	end;
+OnTimer10000:
+	mapannounce "tunnel","Game will restart in 10 seconds.",bc_map;
+	end;
+OnTimer11000:
+	mapannounce "tunnel","Game will restart in 9 seconds.",bc_map;
+	end;
+OnTimer12000:
+	mapannounce "tunnel","Game will restart in 8 seconds.",bc_map;
+	end;
+OnTimer13000:
+	mapannounce "tunnel","Game will restart in 7 seconds.",bc_map;
+	end;
+OnTimer14000:
+	donpcevent "s4#sound::OnRebour";
+	mapannounce "tunnel","Game will restart in 6 seconds.",bc_map;
+	end;
+OnTimer15000:
+	mapannounce "tunnel","Game will restart in 5 seconds.",bc_map;
+	end;
+OnTimer16000:
+	mapannounce "tunnel","Game will restart in 4 seconds.",bc_map;
+	end;
+OnTimer17000:
+	mapannounce "tunnel","Game will restart in 3 seconds.",bc_map;
+	end;
+OnTimer18000:
+	mapannounce "tunnel","Game will restart in 2 seconds.",bc_map;
+	end;
+OnTimer19000:
+	mapannounce "tunnel","Game will restart in 1 second.",bc_map;
+	end;
+OnTimer20000:
+	mapannounce "tunnel","Here we go again! Red "+$@score_td_rouge+" : "+$@score_td_bleu+" Blue ",bc_map;
+	warpparty "SavePointAll",0,0,$@party_r;
+	warpparty "SavePointAll",0,0,$@party_b;
+	stopnpctimer;
+	donpcevent "s4#sound::OnStart";
+	$resetball = 1;
+	$ball = 0;
+	$baseball_r = 0;
+	$name_j$ = "";
+	$nameRID = 0;
+	$ball_alone = 0;
+	setnpcdisplay("#ball_reset", 139);
+	setnpcdisplay("#ball", 10099);
+	end;
+
+OnEffectGoal:
+specialeffect	223;
+specialeffect	56;
+specialeffect	236;
+end;
+}
+//==========================================================================================================
+tunnel,141,183,0	script	#savepoint	-1,1,1,{
+end;
+
+OnTouch:
+savepoint "tunnel",141,183;
+end;
+}
+//==========================================================================================================
+
+-	script	#Timer_S4	-1,{
+OnMitemps:
+	if( $nameRID ) {
+		attachrid($nameRID);
+		changelook 3,0;
+	}
+	$resetball = 1;
+	$ball = 0;
+	$baseball_r = 0;
+	$baseball_b = 0;
+	$name_j$ = "";
+	$nameRID = 0;
+	$ball_alone = 0;
+	donpcevent "s4#sound::OnReset";
+	setnpcdisplay("#ball_reset", 139);
+	mapannounce "tunnel","The fumbi has been reset.",bc_map;
+	warpparty "SavePointAll",0,0,$@party_r;
+	warpparty "SavePointAll",0,0,$@party_b;
+	donpcevent "s4#sound::OnStart";
+	end;
+
+OnStart:
+	if($duree_s4 == 30) {
+		$@mitemps = 1;
+		$@confirmation = 0;
+		initnpctimer;
+		end;
+	}
+	if($duree_s4 == 20) {
+		$@confirmation = 0;
+		donpcevent "20min_s4::OnGo";
+		end;
+	}
+	if($duree_s4 == 15) {
+		$@confirmation = 0;
+		donpcevent "15min_s4::OnGo";
+		end;
+	}
+	if($duree_s4 == 10) {
+		$@confirmation = 0;
+		donpcevent "10min_s4::OnGo";
+		end;
+	}
+	end;
+
+OnTimer900000:
+	$@mitemps = 2;
+	mapannounce "tunnel","The second half begins!",bc_map;
+	donpcevent "#Timer_S4::OnMitemps";
+	end;
+
+OnTimer1800000:
+	mapannounce "tunnel","Game ends in 10 seconds.",bc_map;
+	end;
+OnTimer1801000:
+	mapannounce "tunnel","Game ends in 9 seconds.",bc_map;
+	end;
+OnTimer1802000:
+	mapannounce "tunnel","Game ends in 8 seconds.",bc_map;
+	end;
+OnTimer1803000:
+	mapannounce "tunnel","Game ends in 7 seconds.",bc_map;
+	end;
+OnTimer1804000:
+	mapannounce "tunnel","FGame ends in 6 seconds.",bc_map;
+	end;
+OnTimer1805000:
+	mapannounce "tunnel","Game ends in 5 seconds.",bc_map;
+	end;
+OnTimer1806000:
+	mapannounce "tunnel","Game ends in 4 seconds.",bc_map;
+	end;
+OnTimer1807000:
+	mapannounce "tunnel","Game ends in 3 seconds.",bc_map;
+	end;
+OnTimer1808000:
+	mapannounce "tunnel","Game ends in 2 seconds.",bc_map;
+	end;
+OnTimer1809000:
+	mapannounce "tunnel","Game ends in 1 second.",bc_map;
+	end;
+OnTimer1810000:
+	mapannounce "tunnel","The game has ended!",bc_map;
+	if( $nameRID ) {
+		attachrid($nameRID);
+		changelook 3,0;
+	}
+	mapwarp "tunnel","tunnel",141,183;
+	$ball = 0;
+	$resetball = 1;
+	$@mitemps = 3;
+	$@party_b = 0;
+	$@party_r = 0;
+	setnpcdisplay("#ball_reset", 139);
+	setnpcdisplay("#ball", 10099);
+	stopnpctimer;
+	sleep2 7000;
+	if( $@score_td_bleu == $@score_td_rouge ) {
+		mapannounce "tunnel","Oh man, it's a draw!",bc_map;
+		end;
+	}
+	if( $@score_td_bleu <= $@score_td_rouge ) {
+	mapannounce "tunnel","Congratulations to Red Team, they won! Red "+ $@score_td_rouge +" : "+$@score_td_bleu+" Blue.",bc_map;
+	end;
+	}
+	if( $@score_td_bleu >= $@score_td_rouge ) {
+	mapannounce "tunnel","Congratulations to Blue Team, they won! Red "+ $@score_td_rouge +": "+$@score_td_bleu+" Blue.",bc_map;
+	end;
+	}
+	end;
+}
+//==========================================================================================================
+-	script	20min_s4	-1,{
+OnGo:
+	$@mitemps = 1;
+	initnpctimer;
+	end;
+
+OnTimer600000:
+	$@mitemps = 2;
+	mapannounce "tunnel","The Second Half begins!",bc_map;
+	donpcevent "#Timer_S4::OnMitemps";
+	end;
+
+OnTimer1200000:
+	mapannounce "tunnel","Game ends in 10 seconds.",bc_map;
+	end;
+OnTimer1201000:
+	mapannounce "tunnel","Game ends in 9 seconds.",bc_map;
+	end;
+OnTimer1202000:
+	mapannounce "tunnel","Game ends in 8 seconds.",bc_map;
+	end;
+OnTimer1203000:
+	mapannounce "tunnel","Game ends in 7 seconds.",bc_map;
+	end;
+OnTimer1204000:
+	mapannounce "tunnel","Game ends in 6 seconds.",bc_map;
+	end;
+OnTimer1205000:
+	mapannounce "tunnel","Game ends in 5 seconds.",bc_map;
+	end;
+OnTimer1206000:
+	mapannounce "tunnel","Game ends in 4 seconds.",bc_map;
+	end;
+OnTimer1207000:
+	mapannounce "tunnel","Game ends in 3 seconds.",bc_map;
+	end;
+OnTimer1208000:
+	mapannounce "tunnel","Game ends in 2 seconds.",bc_map;
+	end;
+OnTimer1209000:
+	mapannounce "tunnel","Game ends in 1 second.",bc_map;
+	end;
+OnTimer1210000:
+	mapannounce "tunnel","The game has ended.",bc_map;
+	if( $nameRID ) {
+		attachrid($nameRID);
+		changelook 3,0;
+	}
+	mapwarp "tunnel","tunnel",141,183;
+	$ball = 0;
+	$resetball = 1;
+	$@party_b = 0;
+	$@party_r = 0;
+	$@mitemps = 3;
+	setnpcdisplay("#ball_reset", 139);
+	setnpcdisplay("#ball", 10099);
+	sleep2 7000;
+	if( $@score_td_bleu == $@score_td_rouge ) {
+	mapannounce "tunnel","Oh! A draw! ",bc_map;
+	end;
+	}
+	if( $@score_td_bleu <= $@score_td_rouge ) {
+	mapannounce "tunnel","Congratulations to Red Team, they won! Red "+ $@score_td_rouge +" : "+$@score_td_bleu+" Blue.",bc_map;
+	end;
+	}
+	if( $@score_td_bleu >= $@score_td_rouge ) {
+	mapannounce "tunnel","Congratulations to Blue Team, they won! Red "+ $@score_td_rouge +": "+$@score_td_bleu+" Blue.",bc_map;
+	end;
+	}
+	end;
+}
+//==========================================================================================================
+-	script	15min_s4	-1,{
+OnGo:
+	$@mitemps = 1;
+	initnpctimer;
+	end;
+
+OnTimer450000:
+	$@mitemps = 2;
+	mapannounce "tunnel","The second half begins!",bc_map;
+	donpcevent "#Timer_S4::OnMitemps";
+	end;
+
+OnTimer900000:
+	mapannounce "tunnel","Game ends in 10 seconds.",bc_map;
+	end;
+OnTimer901000:
+	mapannounce "tunnel","Game ends in 9 seconds.",bc_map;
+	end;
+OnTimer902000:
+	mapannounce "tunnel","Game ends in 8 seconds.",bc_map;
+	end;
+OnTimer903000:
+	mapannounce "tunnel","Game ends in 7 seconds.",bc_map;
+	end;
+OnTimer904000:
+	mapannounce "tunnel","Game ends in 6 seconds.",bc_map;
+	end;
+OnTimer905000:
+	mapannounce "tunnel","Game ends in 5 seconds.",bc_map;
+	end;
+OnTimer906000:
+	mapannounce "tunnel","Game ends in 4 seconds.",bc_map;
+	end;
+OnTimer907000:
+	mapannounce "tunnel","Game ends in 3 seconds.",bc_map;
+	end;
+OnTimer908000:
+	mapannounce "tunnel","Game ends in 2 seconds.",bc_map;
+	end;
+OnTimer909000:
+	mapannounce "tunnel","Game ends in 1 second.",bc_map;
+	end;
+OnTimer910000:
+	mapannounce "tunnel","The game has ended.",bc_map;
+	if( $nameRID ) {
+		attachrid($nameRID);
+		changelook 3,0;
+	}
+	mapwarp "tunnel","tunnel",141,183;
+	$ball = 0;
+	$resetball = 1;
+	$@mitemps = 3;
+	$@party_b = 0;
+	$@party_r = 0;
+	setnpcdisplay("#ball_reset", 139);
+	setnpcdisplay("#ball", 10099);
+	stopnpctimer;
+	sleep2 7000;
+	if( $@score_td_bleu == $@score_td_rouge ) {
+	mapannounce "tunnel","Oh! A draw!",bc_map;
+	end;
+	}
+	if( $@score_td_bleu <= $@score_td_rouge ) {
+	mapannounce "tunnel","Congratulations to Red Team, they won! Red "+ $@score_td_rouge +" : "+$@score_td_bleu+" Blue.",bc_map;
+	end;
+	}
+	if( $@score_td_bleu >= $@score_td_rouge ) {
+	mapannounce "tunnel","Congratulations to Blue Team, they won! Red "+ $@score_td_rouge +": "+$@score_td_bleu+" Blue.",bc_map;
+	end;
+	}
+	end;
+}
+//==========================================================================================================
+-	script	10min_s4	-1,{
+OnGo:
+	$@mitemps = 1;
+	initnpctimer;
+	end;
+
+OnTimer300000:
+	$@mitemps = 2;
+	mapannounce "tunnel","The second half is about to begin!",bc_map;
+	donpcevent "#Timer_S4::OnMitemps";
+	end;
+
+OnTimer600000:
+	mapannounce "tunnel","Game ends in 10 seconds.",bc_map;
+	end;
+OnTimer601000:
+	mapannounce "tunnel","Game ends in 9 seconds.",bc_map;
+	end;
+OnTimer602000:
+	mapannounce "tunnel","Game ends in 8 seconds.",bc_map;
+	end;
+OnTimer603000:
+	mapannounce "tunnel","Game ends in 7 seconds.",bc_map;
+	end;
+OnTimer604000:
+	mapannounce "tunnel","Game ends in 6 seconds.",bc_map;
+	end;
+OnTimer605000:
+	mapannounce "tunnel","Game ends in 5 seconds.",bc_map;
+	end;
+OnTimer606000:
+	mapannounce "tunnel","Game ends in 4 seconds.",bc_map;
+	end;
+OnTimer607000:
+	mapannounce "tunnel","Game ends in 3 seconds.",bc_map;
+	end;
+OnTimer608000:
+	mapannounce "tunnel","Game ends in 2 seconds.",bc_map;
+	end;
+OnTimer609000:
+	mapannounce "tunnel","Game ends in 1 second.",bc_map;
+	end;
+OnTimer610000:
+	mapannounce "tunnel","The game has ended.",bc_map;
+	if( $nameRID ) {
+		attachrid($nameRID);
+		changelook 3,0;
+	}
+	mapwarp "tunnel","tunnel",141,183;
+	$ball = 0;
+	$resetball = 1;
+	$@mitemps = 3;
+	$@party_b = 0;
+	$@party_r = 0;
+	setnpcdisplay("#ball_reset", 139);
+	setnpcdisplay("#ball", 10099);
+	stopnpctimer;
+	sleep2 7000;
+	if( $@score_td_bleu == $@score_td_rouge ) {
+		mapannounce "tunnel","Oh! A draw! ",bc_map;
+		end;
+	}
+	if( $@score_td_bleu <= $@score_td_rouge ) {
+	mapannounce "tunnel","Congratulations to Red Team, they won! Red "+ $@score_td_rouge +" : "+$@score_td_bleu+" Blue.",bc_map;
+	end;
+	}
+	if( $@score_td_bleu >= $@score_td_rouge ) {
+	mapannounce "tunnel","Congratulations to Blue Team, they won! Red "+ $@score_td_rouge +": "+$@score_td_bleu+" Blue.",bc_map;
+	end;
+	}
+	end;
+}
+//==========================================================================================================
+tunnel	mapflag	zone	S4L
