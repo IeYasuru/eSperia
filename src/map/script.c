@@ -10372,6 +10372,87 @@ BUILDIN(announce) {
 	}
 	return true;
 }
+
+BUILDIN(delayannounce)
+{
+	const char *mes = script_getstr(st, 2);
+	int         flag = script_getnum(st, 3);
+	int         ticks = script_getnum(st, 4);
+	const char *mapname = script_hasdata(st, 5) ? script_getstr(st, 5) : NULL;
+	const char *fontColor = script_hasdata(st, 6) ? script_getstr(st, 6) : NULL;
+	int         fontType = script_hasdata(st, 7) ? script_getnum(st, 7) : 0x190;
+	int         fontSize = script_hasdata(st, 8) ? script_getnum(st, 8) : 12;
+	int         fontAlign = script_hasdata(st, 9) ? script_getnum(st, 9) : 0;
+	int         fontY = script_hasdata(st, 10) ? script_getnum(st, 10) : 0;
+	int         m;
+
+	if (mapname) {
+		if ((m = map->mapname2mapid(mapname)) < 0)
+			return true;
+
+		map->foreachinmap(script->buildin_announce_sub, m, BL_PC, mes, strlen(mes) + 1, flag&BC_COLOR_MASK, fontColor, fontType, fontSize, fontAlign, fontY);
+
+		script->detach_rid(st);
+
+		if (ticks <= 0)
+		{// do nothing
+		}
+		else if (st->sleep.tick == 0)
+		{// sleep for the target amount of time
+			st->state = RERUNLINE;
+			st->sleep.tick = ticks;
+		}
+		else
+		{// sleep time is over
+			st->state = RUN;
+			st->sleep.tick = 0;
+		}
+
+		return true;
+	}
+
+	if (flag&(BC_TARGET_MASK | BC_SOURCE_MASK)) {
+		send_target target;
+		struct block_list *bl = (flag&BC_NPC) ? map->id2bl(st->oid) : (struct block_list *)script->rid2sd(st);
+		if (bl == NULL)
+			return true;
+
+		switch (flag&BC_TARGET_MASK) {
+		case BC_MAP:  target = ALL_SAMEMAP;	break;
+		case BC_AREA: target = AREA;		break;
+		case BC_SELF: target = SELF;		break;
+		default:      target = ALL_CLIENT;	break;
+		}
+
+		if (fontColor)
+			clif->broadcast2(bl, mes, (int)strlen(mes) + 1, (unsigned int)strtoul(fontColor, (char **)NULL, 0), fontType, fontSize, fontAlign, fontY, target);
+		else
+			clif->broadcast(bl, mes, (int)strlen(mes) + 1, flag&BC_COLOR_MASK, target);
+	}
+	else {
+		if (fontColor)
+			intif->broadcast2(mes, (int)strlen(mes) + 1, (unsigned int)strtoul(fontColor, (char **)NULL, 0), fontType, fontSize, fontAlign, fontY);
+		else
+			intif->broadcast(mes, (int)strlen(mes) + 1, flag&BC_COLOR_MASK);
+	}
+
+	script->detach_rid(st);
+
+	if (ticks <= 0)
+	{// do nothing
+	}
+	else if (st->sleep.tick == 0)
+	{// sleep for the target amount of time
+		st->state = RERUNLINE;
+		st->sleep.tick = ticks;
+	}
+	else
+	{// sleep time is over
+		st->state = RUN;
+		st->sleep.tick = 0;
+	}
+}
+
 /*==========================================
  *------------------------------------------*/
 int buildin_announce_sub(struct block_list *bl, va_list ap)
@@ -19947,6 +20028,7 @@ void script_parse_builtin(void) {
 		BUILDIN_DEF(announce,"si?????"),
 		BUILDIN_DEF(mapannounce,"ssi?????"),
 		BUILDIN_DEF(areaannounce,"siiiisi?????"),
+		BUILDIN_DEF(delayannounce, "sii??????"),
 		BUILDIN_DEF(getusers,"i"),
 		BUILDIN_DEF(getmapguildusers,"si"),
 		BUILDIN_DEF(getmapusers,"s"),
