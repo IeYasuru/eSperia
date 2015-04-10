@@ -5130,6 +5130,55 @@ ACMD(storeall)
 	return true;
 }
 
+ACMD(storeinv)
+{
+	int i;
+
+	if (sd->state.storage_flag != 1) {
+		if (storage->open(sd) == 1) {
+			clif->message(fd, msg_fd(fd, 1161));
+			return false;
+		}
+	}
+
+	for (i = 0; i < MAX_INVENTORY; i++) {
+		if (sd->status.inventory[i].amount) {
+			if (sd->status.inventory[i].equip != 0)
+				continue;
+			storage->add(sd, i, sd->status.inventory[i].amount);
+		}
+	}
+	storage->close(sd);
+
+	clif->message(fd, msg_fd(fd, 1162));
+	return true;
+}
+
+ACMD(storeequip)
+{
+	int i;
+
+	if (sd->state.storage_flag != 0) {
+		if (storage->open(sd) == 1) {
+			clif->message(fd, msg_fd(fd, 1161));
+			return false;
+		}
+	}
+
+	for (i = 0; i < MAX_INVENTORY; i++) {
+		if (sd->status.inventory[i].amount) {
+			if (sd->status.inventory[i].equip != 0) {
+				pc->unequipitem(sd, i, 3);
+				storage->add(sd, 1, sd->status.inventory[i].amount);
+			}
+		}
+	}
+	storage->close(sd);
+
+	clif->message(fd, msg_fd(fd, 1162));
+	return true;
+}
+
 ACMD(clearstorage)
 {
 	int i, j;

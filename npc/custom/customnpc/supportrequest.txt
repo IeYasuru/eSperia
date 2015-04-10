@@ -73,7 +73,7 @@ if (Type == 1_ann)
 		getitem 501, 30;
 		end;
 	} else {
-if (.@lType$ == 2_ann)
+if (.Type$ == 2_ann)
 	{
 		dispbottom "Achieved level 10! Keep leveling and don't get an attitude about it!";
 		dispbottom "Obtained 5000 Zeny";
@@ -81,7 +81,7 @@ if (.@lType$ == 2_ann)
 		getitem 25005, 1;
 		end;
 	} else 
-if (.@lType$ == 3_ann)
+if (.Type$ == 3_ann)
 	{
 		getitem 501, 3;
 		getitem 502, 5;
@@ -94,7 +94,7 @@ if (.@lType$ == 3_ann)
 		end;
 	} else
 	
-if (.@lType$ == 4_ann)
+if (.Type$ == 4_ann)
 	{
 		getitem 25021, 1;
 		Zeny+=100000;
