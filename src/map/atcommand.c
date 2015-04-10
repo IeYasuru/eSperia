@@ -9587,6 +9587,8 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(killable),
 		ACMD_DEF(dropall),
 		ACMD_DEF(storeall),
+		ACMD_DEF(storeinv),
+		ACMD_DEF(storeequip),
 		ACMD_DEF(skillid),
 		ACMD_DEF(useskill),
 		ACMD_DEF(displayskill),
