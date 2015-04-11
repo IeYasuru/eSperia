@@ -1117,7 +1117,7 @@ OnTouch:
 		$nameRID = getcharid(3);
 		$name_j$ = strcharinfo(PC_NAME);
 		donpcevent "#game::OnStart";
-		setnpcdisplay("#ball", 10099);
+		//setnpcdisplay("#ball", 10099);
 	}
 	end;
 }
