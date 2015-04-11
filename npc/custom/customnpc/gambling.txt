@@ -1,98 +1,223 @@
-/*prontera,155,182,5	script	Zeny Gambler	757,{
-mes .@zgam$ = "[^FF0000Zeny Gambler^000000]";
-.zAmount = 1000;
-.zWinningRate = 50;
-mes .@zgam$;
-mes "Do you want to try and gamble "+.zAmount+" Zeny to triple your profit?";
-mes "You have at least a ^FF000E"+.zWinningRate+"^000000% chance to win! So be cautious!";
-next;
-if( select("Yes:No") == 2 ) close;
-if(Zeny < .zAmount) {
-	mes .zgam$;
-	mes "You don't have "+.zAmount+" Zeny.";
-} else {
-	set Zeny, Zeny-.zAmount;
-if ( rand(100) < .zWinningRate ) {
+/* Zeny & Cash Gambler NPC
+	Created by: Aeromesi
+	Version: 1.1
+	1.1 Features (Massive Update)
+	Control the Winning rates at the bottom of the OnInit
+	.zWinningRate handles the winning rate for Zeny
+	.cWinningRate handles the winning rate for Cash Points
+	Now you're able to input what you want to bet for Zeny and Cash Points
+	Example: You have 100 Zeny, you bet 100 Zeny (It takes 100 Zeny from you, in hopes you double your bet, gaining a total of 200 Zeny.
+	Same goes for Cash Points, you spend 50 Cash points in hopes you get 100 Cash Points total.)
+	Special thanks to GmOcean's Script "Slot Machine" for the cutins and wav files for this script.
+	Special thanks to my girlfriend for helping me with the equation, and Max on the Hercules forum for the suggestion!
+	Enjoy another release Hercules!
+	If you like my work, please rep up my profile or consider viewing my Scripting services :) */
 
-	mes "Congratulations! You won the Zeny Gamble! Nice luck you must have!";
-	set Zeny, Zeny+3*.zAmount;
-} else {
-	mes "Sorry, but you didn't win.";
-	}
-}
-close;
-}
-prontera,155,183,5	script	Cash Points Gambler	757,{
-set .@cgam$, "[^FF0000Cash Points Gambler^000000]";
-set .cAmount, 500; 
-set .cWinningRate, 50;
-mes .@cgam$;
-mes "Do you want to try and gamble "+.cAmount+" Cash Points to double your Cash Points?";
-mes "You have at least a ^FF000E"+.cWinningRate+"^000000% chance to win!";
-next;
-if( select("Yes:No") == 2 ) close;
-if(#CASHPOINTS < .cAmount) {
-	mes .cgam$;
-	mes "You need at least "+.cAmount+" Cash Points.";
-} else {
-	set #CASHPOINTS, #CASHPOINTS-.cAmount;
-if ( rand(100) < .cWinningRate ) {
-	set #CASHPOINTS, #CASHPOINTS+2*.cAmount+500;
-	mes "Congratulations! You won the Cash Points Gamble! Nice luck you must have!";
-} else {
-	mes "Sorry, but you didn't win.";
-	}
-}
-close;
-}*/
-eden,100,144,4	script	eSper Gambler	502,{
-mes .@espg$ = "[^FF0000eSper Gambler^000000]";
-mes "Hello "+strcharinfo(0)+".";
+eden,100,144,4	script	Zeny & Cash Gambler	563,{
+mes .@espg$ = "[^FF0000Zeny & Cash Gambler^000000]";
+mes "Hello ^0000FF"+strcharinfo(0)+"^000000.";
 mes "What would you like to try and gamble?";
 next;
+
 switch(select("Zeny:Cash Points") ) {
+// Zeny Gambler
 case 1:
-mes .@zgam$ = "[^FF0000Zeny Gambler^000000]";
-.zAmount = 1000;
-.zWinningRate = 50;
-mes "Do you want to try and gamble "+.zAmount+" Zeny to triple what you spent?";
+mes .@espg$;
+
+mes "Do you want to try and gamble whatever Zeny you put your bets on in hopes you double your bet?";
+mes " ";
 mes "You have at least a ^FF000E"+.zWinningRate+"^000000% chance to win! So be cautious!";
 next;
 if( select("Yes:No") == 2 ) close;
-if(Zeny < .zAmount) {
-	mes .zgam$;
-	mes "You don't have "+.zAmount+" Zeny.";
-} else {
-	Zeny-=.zAmount;
-if ( rand(100) < .zWinningRate ) {
+mes .@espg$;
+mes "Put your bets on the amount of Zeny you would like to try and gamble to double your profit!";
 
-	mes "Congratulations! You won the Zeny Gamble! Nice luck you must have!";
-	Zeny+=3*.zAmount;
-} else {
-	mes "Sorry, but you didn't win.";
-	}
-}
+next;
+input .@zAmount;
+mes .@espg$;
+
+if (Zeny <= 0) {
+	mes "Sorry, but it seem's you don't even have 1 Zeny.";
+	close;
+} else
+
+if (Zeny < .@zAmount) {
+	mes "You don't have ^FF000E"+.@zAmount+"^000000 Zeny.";
 close;
+} else
+
+mes "You have put your bets on ^FF000E"+.@zAmount+"^000000 Zeny.";
+mes "So now let's try to see if you win or not!";
+next;
+Zeny -= .@zAmount;
+if( rand(100) < .zWinningRate ) {
+soundeffect "slot_pay_coin.wav",0;
+cutin "slot_21", 4;
+sleep2 200;
+cutin "slot_22", 4;
+sleep2 200;
+cutin "slot_23", 4;
+sleep2 200;
+cutin "slot_24", 4;
+sleep2 200;
+cutin "slot_25", 4;
+sleep2 200;
+cutin "slot_26", 4;
+sleep2 200;
+cutin "slot_27", 4;
+sleep2 200;
+cutin "slot_28", 4;
+sleep2 255;
+cutin "slot_29", 4;
+sleep2 270;
+cutin "slot_30", 4;
+sleep2 300;
+cutin "slot_31", 4;
+sleep2 320;
+cutin "slot_32", 4;
+sleep2 350;
+cutin "slot_33", 4;
+sleep2 100;
+soundeffect "slot_jackpot.wav",0;
+	mes .@espg$;
+	mes "Congratulations! You won the Zeny Gamble! Nice luck you must have!";
+	Zeny+=2*.@zAmount;
+close2;
+cutin "", 255;
+end;
+} else
+soundeffect "slot_pay_coin.wav",0;
+cutin "slot_1", 4;
+sleep2 255;
+cutin "slot_2", 4;
+sleep2 255;
+cutin "slot_3", 4;
+sleep2 255;
+cutin "slot_4", 4;
+sleep2 255;
+cutin "slot_5", 4;
+sleep2 255;
+cutin "slot_6", 4;
+sleep2 255;
+cutin "slot_7", 4;
+sleep2 255;
+cutin "slot_8", 4;
+sleep2 255;
+cutin "slot_9", 4;
+sleep2 270;
+cutin "slot_10", 4;
+sleep2 300;
+cutin "slot_11", 4;
+sleep2 320;
+cutin "slot_12", 4;
+sleep2 350;
+cutin "slot_13", 4;
+sleep2 100;
+mes .@espg$;
+mes "Sorry, you didn't win the roll. Better luck next time!";
+close2;
+cutin "", 255;
+end;
+
+// Cash Points Gambler
 case 2:
-mes .@cgam$ = "[^FF0000Cash Points Gambler^000000]";
-.cAmount = 500; 
-.cWinningRate = 50;
-mes "Do you want to try and gamble "+.cAmount+" Cash Points to double what you spent?";
-mes "You have at least a ^FF000E"+.cWinningRate+"^000000% chance to win!";
+
+mes .@espg$;
+mes "Do you want to try and gamble whatever Cash Points you put your bets on in hopes you double your bet?";
+mes " ";
+mes "You have at least a ^FF000E"+.cWinningRate+"^000000% chance to win! So be cautious!";
 next;
 if( select("Yes:No") == 2 ) close;
-if(#CASHPOINTS < .cAmount) {
-	mes .cgam$;
-	mes "You need at least "+.cAmount+" Cash Points.";
-} else {
-#CASHPOINTS-=.cAmount;
-if ( rand(100) < .cWinningRate ) {
-#CASHPOINTS+=2*.cAmount+500;
-	mes "Congratulations! You won the Cash Points Gamble! Nice luck you must have!";
-} else {
-	mes "Sorry, but you didn't win.";
-	}
-}
+mes .@espg$;
+mes "Put your bets on the amount of Cash Points you would like to try and gamble to double your Cash Points!";
+
+next;
+input .@cAmount;
+mes .@espg$;
+if (#CASHPOINTS <= 0) {
+	mes "Sorry, but it seem's you don't even have 1 Cash Point.";
+	close;
+} else
+if (#CASHPOINTS < .@cAmount) {
+	mes "You don't have ^FF000E"+.@cAmount+"^000000 Cash Points.";
 close;
+} else
+
+mes "You have put your bets on ^FF000E"+.@cAmount+"^000000 Cash Points.";
+mes "So now let's try to see if you win or not!";
+next;
+#CASHPOINTS-=.@cAmount;
+if( rand(100) < .cWinningRate ) {
+soundeffect "slot_pay_coin.wav",0;
+cutin "slot_21", 4;
+sleep2 200;
+cutin "slot_22", 4;
+sleep2 200;
+cutin "slot_23", 4;
+sleep2 200;
+cutin "slot_24", 4;
+sleep2 200;
+cutin "slot_25", 4;
+sleep2 200;
+cutin "slot_26", 4;
+sleep2 200;
+cutin "slot_27", 4;
+sleep2 200;
+cutin "slot_28", 4;
+sleep2 255;
+cutin "slot_29", 4;
+sleep2 270;
+cutin "slot_30", 4;
+sleep2 300;
+cutin "slot_31", 4;
+sleep2 320;
+cutin "slot_32", 4;
+sleep2 350;
+cutin "slot_33", 4;
+sleep2 100;
+soundeffect "slot_jackpot.wav",0;
+	mes .@espg$;
+	mes "Congratulations! You won the Cash Points Gamble! Nice luck you must have!";
+	#CASHPOINTS+=2*.@cAmount;
+
+close2;
+cutin "", 255;
+end;
+} else
+soundeffect "slot_pay_coin.wav",0;
+cutin "slot_1", 4;
+sleep2 255;
+cutin "slot_2", 4;
+sleep2 255;
+cutin "slot_3", 4;
+sleep2 255;
+cutin "slot_4", 4;
+sleep2 255;
+cutin "slot_5", 4;
+sleep2 255;
+cutin "slot_6", 4;
+sleep2 255;
+cutin "slot_7", 4;
+sleep2 255;
+cutin "slot_8", 4;
+sleep2 255;
+cutin "slot_9", 4;
+sleep2 270;
+cutin "slot_10", 4;
+sleep2 300;
+cutin "slot_11", 4;
+sleep2 320;
+cutin "slot_12", 4;
+sleep2 350;
+cutin "slot_13", 4;
+sleep2 100;
+mes .@espg$;
+mes "Sorry, you didn't win the roll. Better luck next time!";
+close2;
+cutin "", 255;
+end;
+OnInit:
+.cWinningRate = 50;
+.zWinningRate = 50;
 }
 }
