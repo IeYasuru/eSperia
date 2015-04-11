@@ -1,16 +1,17 @@
 // Fumbi System
 // Developed by: Aeromesi // old alias Aeromas
 // Enlightenment goes to Grunger for helping me, Kit the Baby Fox for more enlightenment, & Crayu my friend for the idea =P
-// Version: 1.4 (3/16/2015
+// Version: 1.7 (4/09/2015)
 // Compatible emulator: Hercules
 // What it does:
-// It's based off the game S4 League, basically you fumbi a armor or weapon and you get a random armor or weapon.
+// It's based off the game S4 League, basically you Fumbi a armor or weapon and you get a random armor or weapon.
 // After 20 Fumbi's you get the chance to get a card for 10,000,000 If you don't want to fumbi a card, you can decline, but it resets your Fumbi counts
 // http://www.s4league.com Try it out!
-// Newest additions in 1.4 are: Totally customizable! Everything can be changed by simply editing values .wpnfee, .armfee, and .carfee, before it was all stated through default of what I set the integers to, aka 200,000 Zeny, 100,000 Zeny, and 2,000,000 Zeny for Fumbi, he now displays whatever integer you put. Switched out all old commands with the new ones.
 
 /* Configuration method:
                                 Server Side:
+								[1.7 Update]
+		Re-worded fumb20 as fumb_attempts for clearer understanding, also had to fix a few errors in Quesophs revision of the script, but still, thank you for helping make this script better!
 								[1.6 Update]
 		Special thanks to: Quesoph for shortening the script, kept in the label and the sleep2 counters to 2000 so that it simulates the real Fumbi system on S4 League, other then that, have fun!
                                 [1.5 Update]
@@ -39,7 +40,7 @@
                             
 eden,93,104,4	script	Fumbi	10099,{
     mes .fname$;
-    if(fumb20 == .fumbirolls) {
+    if(fumb_attempts == .fumbirolls) {
         soundeffect "fumbi_fail.wav",0;
         mes "Congratulations!";
         mes "You are at "+.fumbirolls+" Fumbis";
@@ -61,21 +62,19 @@ eden,93,104,4	script	Fumbi	10099,{
                         mes "Alright then, we will now commence the Fumbi roll!";
                         mes "Now let's start this up.";
                         next;
-                        mes .fname$;
-                        mes "Fumbi roll is commencing...";
                         callsub Fumbi_Snd;
                         switch(rand(1,4)) {
                             case 1:
                                 soundeffect "s4miss_start.wav",0;
                                 mes "Sorry, but it seems you failed the roll.";
                                 mes "Better luck next time!";
-                                fumb20 = 0; Zeny-=.carfee;
+                                fumb_attempts = 0; Zeny-=.carfee;
                                 close;
                             default:
                                 mes "Congratulations! You've successfully Fumbid a card!";
                                 .@item = callfunc ("Fumbi_Roll", 4001,4453);
                                 getitem .@item,1;
-                                 fumb20 = 0; Zeny-=.carfee;
+                                 fumb_attempts = 0; Zeny-=.carfee;
                                 close;
                         }
                     close;
@@ -97,7 +96,7 @@ eden,93,104,4	script	Fumbi	10099,{
                         mes "3...";
                         sleep2 1000;
                         mes "Your Fumbi count is now reset.";
-                        fumb20 = 0;
+                        fumb_attempts = 0;
                         close;
                     case 2:
                         mes .fname$;
@@ -116,7 +115,7 @@ eden,93,104,4	script	Fumbi	10099,{
     mes "Well I decided to come on over to "+.ServName$+" and help you guys out too!";
     next;
     mes .fname$;
-    mes "You have the option to Fumbi a Weapon for "+.wpnfee+" zeny or an Armor for "+.armfee+" zeny.";
+    mes "You have the option to Fumbi a Weapon for "+.wpnfee+" Zeny or an Armor for "+.armfee+" Zeny.";
     next;
     mes .fname$;
     mes "Once you Fumbi at least "+.fumbirolls+" times, you will have the option to Fumbi a card for "+.carfee+" zeny.";
@@ -156,39 +155,41 @@ eden,93,104,4	script	Fumbi	10099,{
                 case 5: callsub Fumbi, 2601, 2762, .ArmChance, .armfee; break;
             }
 
-Fumbi: // 1 label for the 18 cases
+Fumbi:
     next;
     mes .fname$;
     mes "All right, so would you like to try and Fumbi?";
     if(select("Yes","No") == 1) {
         if(Zeny < getarg(3)) {
+			mes .fname$;
             mes "I'm sorry, but it seems you don't have "+getarg(3)+"z.";
             mes "Please come again when you have "+getarg(3)+"z.";
             close;
         }
-        Zeny -= getarg(3); ++fumb20;
-        mes "You have "+ getarg(3) +" zeny! We will now start the Fumbing process.";
+        Zeny -= getarg(3); ++fumb_attempts;
+		next;
+		mes .fname$;
+        mes "You have "+ getarg(3) +" Zeny! We will now start the Fumbing process.";
         next;
         callsub Fumbi_Snd;
         if ( rand(100) < getarg(2) ) {
-            mes "You have failed to Fumbi a Weapon.";
-            mes "Fumbi Points: (^CD3333"+fumb20+"^000000/^003EFF"+.fumbirolls+"^000000)  to Fumbi a card for "+.carfee+" Zeny.";
+            mes "You have failed the Fumbi roll.";
+            mes "Fumbi Points: (^CD3333"+fumb_attempts+"^000000/^003EFF"+.fumbirolls+"^000000)  to Fumbi a card for "+.carfee+" Zeny.";
             close;
         }
         soundeffect "fumbi_wpn.wav",0;
-//		.@item = callfunc ("Fumbi_Roll",4001,4453);
-		.@item = callsub ("Fumbi_Roll", getarg(0), getarg(1));
+		.@item = callsub (Fumbi_Roll, getarg(0), getarg(1));
         getitem .@item, 1;
-        mes "You got your weapon! Please come again to try and Fumbi!";
-        mes "You have (^CD3333"+ fumb20 +"^000000/^003EFF"+.fumbirolls+"^000000)  to attempt to Fumbi a card for "+.carfee+" zeny!";
+        mes "You successfully Fumbi'd an item! Please come again to try and Fumbi more items towards a card!";
+        mes "You have (^CD3333"+ fumb_attempts +"^000000/^003EFF"+.fumbirolls+"^000000)  to attempt to Fumbi a card for "+.carfee+" zeny!";
         close;
     }
     next;
     mes .fname$;
-    mes "Okay, please come back if you'd like to try and Fumbi a Weapon.";
+    mes "Okay, please come back if you'd like to try and Fumbi.";
     close;
     
-Fumbi_Roll: // function converted to label
+Fumbi_Roll:
     .@item = rand(getarg(0),getarg(1));
 
     for( .@i = 0; .@i<getarraysize(.GodItems); .@i+=1)
@@ -197,14 +198,15 @@ Fumbi_Roll: // function converted to label
     return (.@item);
 
 Fumbi_Snd:
+		mes .fname$;
         sleep2 .fumbscounter;
         soundeffect "fumbi_run.wav",0;
         mes "1..";
         soundeffect "fumbi_start.wav",0;
-        sleep2 10;
+        sleep2 2000;
         mes "2...";
         soundeffect "fumbi_start.wav",0;
-        sleep2 10;
+        sleep2 2000;
         mes "3...";
         soundeffect "fumbi_start.wav",0;
         sleep2 2000;
@@ -214,7 +216,7 @@ Fumbi_Snd:
         return;
 
 OnInit: // Config
-	.fumbscounter = 10;
+	.fumbscounter = 2000;
     .fumbirolls = 20;
     .WpnChance = 10;
     .ArmChance = 50;
