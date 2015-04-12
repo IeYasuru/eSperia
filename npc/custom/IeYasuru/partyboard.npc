@@ -124,7 +124,7 @@ PB_LFM:
 			mes "These are the players currently interested in joining a party.";
 			switch(select(implode($@PB_PartyBoard$,":"))) {
 				default:
-					mes "Your choise was: ^0000FF"+ get_char_name($@PB_PartyBoard$[@menu-1]);
+					mes "Your choice was: ^0000FF"+ get_char_name($@PB_PartyBoard$[@menu-1]);
 					mes "^000000";
 					mes "Is this correct?";
 					switch(select("Yes:No")) {
