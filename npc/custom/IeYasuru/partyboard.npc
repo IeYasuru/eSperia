@@ -141,7 +141,11 @@ PB_LFM:
 								if(!attachrid(.@curPl))
 									end;
 								mes .npc$;
-								mes "I'm sorry, it seems that player is no longer online.";
+								if(!getstrlen(.@charName$)) {
+									mes "I'm sorry, that character has either joined another party or withdrew their registration.";
+								} else {
+									mes "I'm sorry, it seems that player is no longer online.";
+								}
 								mes "Would you like to try again?";
 								switch(select("Yes:No")) {
 									case 1:
@@ -153,9 +157,9 @@ PB_LFM:
 							}
 							mes .npc$;
 							mes "You've been invited to join a party!";
-							mes "Party Leader: "+ .@curPlName$;
-							mes "Party Leader Lv.: "+ .@curPlLv;
-							mes " ";
+							mes "Party Leader: ^0000FF"+ .@curPlName$;
+							mes "^000000Party Leader Lv.: ^00FF00"+ .@curPlLv;
+							mes "^000000";
 							mes "Would you like to warp to ^FF0000"+ .@m$ +"^000000 to meet the party leader?";
 							switch(select("Yes:No")) {
 								case 1:
