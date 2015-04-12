@@ -81,7 +81,7 @@ PB_LFP:
 			$@PB_PartyBoard$[getarraysize($@PB_PartyBoard$)] = "^0000FF"+ strcharinfo(0) +"^000000 [^FF0000"+ jobname(Class) +"^000000 ^FF0000Lv.^000000 "+ BaseLevel +"/"+ JobLevel +"]";
 			@PB_Registered = 1;
 			parse_party_list(0);
-			mes "I've added you to the list. Once someone selects you, I will forward you a party invitatiion on their behalf.";
+			mes "I've added you to the list. Once someone selects you, I will forward you a party invitation on their behalf.";
 			mes "Have a great day.";
 			close;
 			
