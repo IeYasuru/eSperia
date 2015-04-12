@@ -711,16 +711,16 @@ const char* script_skip_space(const char* p)
 			while(*p && *p!='\n')
 				++p;
 		}
-		else if( *p == '/' && p[1] == '*' )
+		else if (*p == '/' && p[1] == '*')
 		{// block comment
 			p += 2;
-			for(;;)
+			for (;;)
 			{
-				if( *p == '\0' ) {
+				if (*p == '\0') {
 					script->disp_warning_message("script:script->skip_space: end of file while parsing block comment. expected "CL_BOLD"*/"CL_NORM, p);
 					return p;
 				}
-				if( *p == '*' && p[1] == '/' )
+				if (*p == '*' && p[1] == '/')
 				{// end of block comment
 					p += 2;
 					break;
@@ -10437,6 +10437,8 @@ BUILDIN(delayannounce)
 		if (attachRid)
 			script_pushint(st, (map->id2sd(st->rid) != NULL));
 	}
+
+	return true;
 }
 
 /*==========================================

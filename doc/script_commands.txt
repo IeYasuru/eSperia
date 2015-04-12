@@ -639,7 +639,7 @@ Strings
 -------
 
 Strings are enclosed in "double quotes". To include the literal double
-quote symbol (") in a string you need to escape it with a blackslash:
+quote symbol ("") in a string you need to escape it with a blackslash: 
 
     .@string$ = "This string contains some \"double quote\" symbols";
 
@@ -6899,7 +6899,7 @@ mapflag's state.
 *getbattleflag("<battle flag>")
 
 Sets or gets the value of the given battle flag.
-Battle flags are the flags found in the battle/*.conf files and is also 
+Battle flags are the flags found in the battle/ *.conf files and is also 
 used in Lupus' variable rates script.
 
 Examples:
