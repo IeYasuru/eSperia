@@ -39,15 +39,15 @@ eden,110,127,4	script	GM Handler::hand	971,{
 			case 1: // -- GM logon settings -- //
 			GM_Menu:
 				switch(select("Hide - "+((#autocommand&256) ? .on$:.off$),"Speed - "+((#autocommand&512) ? "0":"100"),"Warp - "+((#autocommand&1024) ? #warp$:"Off"),"Who3 - "+((#autocommand&2048) ? .on$:.off$),"Announce Login - "+((#autocommand&4096) ? .on$:.off$),"Proceed to other menu:Leave")) {
-					case 1: //Blockstart - Hide
+					case 1:
 						set #autocommand,#autocommand^256;
 						callsub GM_Menu;
-					//Blockend
-					case 2: //Blockstart - Speed
+
+					case 2:
 						set #autocommand,#autocommand^512;
 						callsub GM_Menu;
-					//Blockend
-					case 3: //Blockstart - Warp
+
+					case 3:
 						if(#autocommand&1024) {
 							mes "Input the word ^00FF00Off^000000 to turn off auto warp.";
 							input #warp$;
@@ -58,18 +58,18 @@ eden,110,127,4	script	GM Handler::hand	971,{
 						set #autocommand,#autocommand^1024;
 						input #warp$;
 						callsub GM_Menu;
-					//Blockend
-					case 4: //Blockstart - Who3
+
+					case 4:
 						set #autocommand,#autocommand^2048;
 						callsub GM_Menu;
-					//Blockend
-					case 5: //Blockstart - Logon
+					
+					case 5:
 						set #autocommand,#autocommand^4096;
 						callsub GM_Menu;
-					//Blockend
-					case 6: //Blockstart - Player Menu
+					
+					case 6:
 						break;
-					//Blockend
+					
 					case 7: close;
 				}
 				break;
